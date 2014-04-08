@@ -8,16 +8,22 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import kz.beesoft.client.IProcessor;
+
 @WebServlet("/ws/*")
 public class WSServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	
+	@Inject
+	private IProcessor processor;
+	
 	public WSServlet() {
 		super();
 	}
@@ -26,10 +32,10 @@ public class WSServlet extends HttpServlet {
 			HttpServletResponse response) {
 		String xml = "";
 		String config = "";
-		
+
 		String[] parts = request.getRequestURI().toString().split("/");
 		if (parts.length < 4) {
-			return "Service not found";
+			return "Wrong url";
 		} else {
 			String path = System.getProperty("jboss.server.temp.dir")
 					+ File.separator + "soap" + File.separator + parts[2]
@@ -37,7 +43,8 @@ public class WSServlet extends HttpServlet {
 			File configFile = new File(path);
 			if (configFile.exists()) {
 				try {
-					BufferedReader in = new BufferedReader(new FileReader(configFile));
+					BufferedReader in = new BufferedReader(new FileReader(
+							configFile));
 					while (in.ready()) {
 						config += in.readLine();
 					}
@@ -46,15 +53,15 @@ public class WSServlet extends HttpServlet {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
-				} 
+				}
 			} else {
 				return "Service not found";
 			}
 
 		}
-		
+
 		if (request.getContentLength() > 0) {
-			
+
 			byte[] xmlData = new byte[request.getContentLength()];
 			try {
 				BufferedInputStream in = new BufferedInputStream(
@@ -73,8 +80,8 @@ public class WSServlet extends HttpServlet {
 		} else {
 			return "No XML recieved";
 		}
-		
-		return "";
+
+		return processor.process(config, xml);
 
 	}
 
