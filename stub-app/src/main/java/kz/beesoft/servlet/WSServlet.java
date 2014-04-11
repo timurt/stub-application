@@ -20,10 +20,10 @@ import kz.beesoft.client.IProcessor;
 @WebServlet("/ws/*")
 public class WSServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Inject
 	private IProcessor processor;
-	
+
 	public WSServlet() {
 		super();
 	}
@@ -46,7 +46,17 @@ public class WSServlet extends HttpServlet {
 					BufferedReader in = new BufferedReader(new FileReader(
 							configFile));
 					while (in.ready()) {
-						config += in.readLine();
+						String s = in.readLine();
+						for (int i = 0; i < s.length(); i++) {
+							if (s.charAt(i) == ' ') {
+								continue;
+							} else {
+								s = s.substring(i, s.length());
+								break;
+							}
+						}
+						config += s.replaceAll("\n", "").replaceAll("\r", "")
+								.replaceAll("\t", "");
 					}
 					in.close();
 				} catch (FileNotFoundException e) {
@@ -68,8 +78,29 @@ public class WSServlet extends HttpServlet {
 						request.getInputStream());
 				in.read(xmlData, 0, xmlData.length);
 				if (request.getCharacterEncoding() != null) {
-					xml = new String(xmlData, request.getCharacterEncoding());
+					String s = new String(xmlData,
+							request.getCharacterEncoding());
+					int i = 0;
+					while(i < s.length()){
+						if (s.charAt(i) == '<') {
+							String sub = s.substring(i);
+							String sub2 = sub.substring(0, sub.indexOf('>'));
+							xml+= sub2;
+							i += sub2.length();
+						}else{
+							if(s.charAt(i) == ' '){
+								i++;
+								continue;
+							}else{
+								xml += s.charAt(i);
+								i++;
+							}
+						}
+					}
+					xml = xml.replaceAll("\n", "").replaceAll("\r", "")
+							.replaceAll("\t", "");
 				} else {
+
 					xml = new String(xmlData);
 				}
 				in.close();
