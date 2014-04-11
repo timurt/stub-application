@@ -87,7 +87,9 @@ public class WSServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
+		response.setContentType("text/xml; charset=UTF-8");
 		PrintWriter out = response.getWriter();
+		
 		out.println(process(request, response));
 		out.close();
 
