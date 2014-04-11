@@ -11,7 +11,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -22,6 +21,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 @WebServlet("/soap/*")
 public class SoapControllerServlet extends HttpServlet {
+	
 	private static final long serialVersionUID = 1L;
 
 	private static final int MAX_MEMORY_SIZE = 1024 * 1024 * 2;
@@ -48,10 +48,11 @@ public class SoapControllerServlet extends HttpServlet {
 			HttpServletResponse response) throws IOException {
 		//Angular JS response headers
 		response.addHeader("Access-Control-Allow-Origin", "*");
-		response.addHeader("Access-Control-Allow-Methods",
-				"POST, GET, OPTIONS, PUT, DELETE, HEAD");
 		response.addHeader("Access-Control-Allow-Headers",
 				"X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
+		response.addHeader("Access-Control-Allow-Methods",
+				"POST, GET, OPTIONS, PUT, DELETE, HEAD");
+		
 		response.addHeader("Access-Control-Max-Age", "1728000");
 		response.setContentType("application/json; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
@@ -60,7 +61,7 @@ public class SoapControllerServlet extends HttpServlet {
 		String[] parts = request.getRequestURI().toString().split("/");
 		
 		String result = "";
-		if (parts.length >= 3) {
+		if (parts.length >= 4) {
 			String action = parts[3];
 			
 			//Returns JSON of all services
@@ -117,17 +118,14 @@ public class SoapControllerServlet extends HttpServlet {
 							+ File.separator + service + ".wsdl");
 					wsdlFile.createNewFile();
 					uploadedFile.write(wsdlFile);
-
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			} else if ("edit".equals(action)) {
-
 			} else if ("delete".equals(action)) {
-				
-				if (request.getParameter("service") != null) {
+				if (parts.length >= 5) {
 					File folderToDelete = new File(path + File.separator
-							+ request.getParameter("service"));
+							+ parts[4]);
 					if (folderToDelete.exists()) {
 						delete(folderToDelete);
 						result = "Successfully deleted";
@@ -137,6 +135,12 @@ public class SoapControllerServlet extends HttpServlet {
 
 				}
 
+			} else if ("service".equals(action)) {
+				if (parts.length >= 5) {
+					
+					//Service service = parser.parseWSDL(parts[4]);
+					//result = service.toJSON();
+				}
 			}
 		}
 		PrintWriter out = response.getWriter();
