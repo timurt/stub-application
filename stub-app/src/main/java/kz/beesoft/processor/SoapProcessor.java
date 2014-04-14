@@ -1,6 +1,12 @@
 package kz.beesoft.processor;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -38,7 +44,7 @@ import org.xml.sax.InputSource;
 
 public class SoapProcessor implements IProcessor {
 
-	static HashMap<String, String> ns;
+	static HashMap<String, String> ns, ns2;
 
 	static HashMap<String, String> final_data = new HashMap<String, String>();
 
@@ -53,7 +59,7 @@ public class SoapProcessor implements IProcessor {
 
 		// Create XPathFactory object
 		XPathExpression expr = xpath.compile(path);
-		
+
 		Node node = (Node) expr.evaluate(doc, XPathConstants.NODE);
 
 		return node.getTextContent();
@@ -128,11 +134,13 @@ public class SoapProcessor implements IProcessor {
 		Node n = (Node) xpath.compile(
 				"/config/methods/method[@name = '" + method + "']/cases")
 				.evaluate(loadXMLFromString(mess), XPathConstants.NODE);
+
 		for (int i = 0; i < n.getChildNodes().getLength(); i++) {
 			if (n.getChildNodes().item(i).getNodeName().equals("case")) {
 				if (compute(final_data, n.getChildNodes().item(i)
 						.getAttributes().item(0).getTextContent())) {
-					return "passed_response";
+					return createResponse(mess, xpath, n.getChildNodes()
+							.item(i));
 				}
 			}
 		}
@@ -154,7 +162,7 @@ public class SoapProcessor implements IProcessor {
 				}
 			}
 		}
-		//System.out.println(s);
+		// System.out.println(s);
 		return Boolean.parseBoolean(engine.eval(s).toString());
 	}
 
@@ -235,5 +243,109 @@ public class SoapProcessor implements IProcessor {
 			e.printStackTrace();
 			return "Error";
 		}
+	}
+
+	public static String createResponse(String mess, XPath xpath, Node node)
+			throws Exception {
+		Node n = (Node) xpath.compile("/config").evaluate(
+				loadXMLFromString(mess), XPathConstants.NODE);
+		NodeList nl = node.getChildNodes();
+		String path = "";
+		for (int i = 0; i < nl.getLength(); i++) {
+			if (nl.item(i).getNodeName().equals("file")) {
+				path = System.getProperty("jboss.server.temp.dir")
+						+ File.separator + "soap" + File.separator + "ws"
+						+ File.separator
+						+ n.getAttributes().item(0).getTextContent()
+						+ File.separator
+						+ nl.item(i).getAttributes().item(0).getTextContent();
+
+				File configFile = new File(path);
+				String s = "";
+
+				if (configFile.exists()) {
+					try {
+						BufferedReader in = new BufferedReader(new FileReader(
+								configFile));
+						while (in.ready()) {
+							String temp = in.readLine();
+							for (int j = 0; j < s.length(); j++) {
+								if (temp.charAt(j) == ' ') {
+									continue;
+								} else {
+									temp = temp.substring(j, temp.length());
+									break;
+								}
+							}
+							s += temp.replaceAll("\n", "").replaceAll("\r", "")
+									.replaceAll("\t", "");
+						}
+						in.close();
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					if (node.getChildNodes().item(1).getNodeName().equals("")) {
+						return s;
+					}
+					return writeData(s, node, xpath);
+				} else {
+					return "Service not found";
+				}
+			}
+		}
+
+		return "";
+	}
+
+	public static String writeData(String s, Node node, XPath xpath)
+			throws Exception {
+
+		ns = divide(s);
+
+		xpath.setNamespaceContext(new NamespaceContext() {
+			public String getNamespaceURI(String prefix) {
+				System.out.println(prefix + " asdasd");
+				for (int i = 0; i < ns.size(); i++) {
+					if (ns.containsKey(prefix)) {
+						return ns.get(prefix);
+					}
+				}
+				return XMLConstants.NULL_NS_URI;
+			}
+
+			// This method isn't necessary for XPath processing.
+			public String getPrefix(String uri) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public Iterator<?> getPrefixes(String namespaceURI) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+		});
+
+		DocumentBuilderFactory domFactory = DocumentBuilderFactory
+				.newInstance();
+		domFactory.setNamespaceAware(true);
+		DocumentBuilder builder = domFactory.newDocumentBuilder();
+		Document doc = builder.parse(new InputSource(new StringReader(s)));
+
+		for (int i = 0; i < node.getChildNodes().item(1).getChildNodes()
+				.getLength(); i++) {
+
+			String path = node.getChildNodes().item(1).getChildNodes().item(i)
+					.getAttributes().item(0).getTextContent();
+			String value = node.getChildNodes().item(1).getChildNodes().item(i)
+					.getAttributes().item(1).getTextContent();
+			XPathExpression expr = xpath.compile(path);
+
+			Node nd = (Node) expr.evaluate(doc, XPathConstants.NODE);
+			nd.setTextContent(value);
+		}
+		return nodeToString(doc.getFirstChild());
 	}
 }
