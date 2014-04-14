@@ -56,7 +56,8 @@ public class SoapProcessor implements IProcessor {
 		domFactory.setNamespaceAware(true);
 		DocumentBuilder builder = domFactory.newDocumentBuilder();
 		Document doc = builder.parse(new InputSource(new StringReader(mess)));
-
+		System.out.println(mess);
+		System.out.println(path);
 		// Create XPathFactory object
 		XPathExpression expr = xpath.compile(path);
 
@@ -71,7 +72,7 @@ public class SoapProcessor implements IProcessor {
 		String s = "";
 
 		try {
-
+			System.out.println();
 			Node n = (Node) xpath.compile(path).evaluate(
 					loadXMLFromString(mess), XPathConstants.NODE);
 			for (int i = 0; i < n.getChildNodes().getLength(); i++) {
@@ -93,7 +94,7 @@ public class SoapProcessor implements IProcessor {
 	public static Document loadXMLFromString(String xml) throws Exception {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
-		factory.setNamespaceAware(false);
+		factory.setNamespaceAware(true);
 
 		InputSource is = new InputSource(new StringReader(xml));
 		// factory.setIgnoringElementContentWhitespace(true);
@@ -195,7 +196,12 @@ public class SoapProcessor implements IProcessor {
 			SOAPBody body = soapMessage.getSOAPBody();
 			SOAPEnvelope soapEnv = soapMessage.getSOAPPart().getEnvelope();
 			NodeList nl = soapEnv.getChildNodes();
-			String method = body.getChildNodes().item(0).getNodeName();
+			String method = "";
+			for (int i = 0; i < body.getChildNodes().getLength(); i++) {
+				if (body.getChildNodes().item(i).hasChildNodes()) {
+					method = body.getChildNodes().item(i).getNodeName();
+				}
+			}
 			String s = "";
 			for (int i = 0; i < nl.getLength(); i++) {
 				s += nodeToString(nl.item(i));
@@ -269,24 +275,23 @@ public class SoapProcessor implements IProcessor {
 								configFile));
 						while (in.ready()) {
 							String temp = in.readLine();
-							for (int j = 0; j < s.length(); j++) {
-								if (temp.charAt(j) == ' ') {
-									continue;
-								} else {
-									temp = temp.substring(j, temp.length());
-									break;
-								}
-							}
-							s += temp.replaceAll("\n", "").replaceAll("\r", "")
-									.replaceAll("\t", "");
+							s += temp;
+							/*
+							 * for (int j = 0; j < temp.length(); j++) { if
+							 * (temp.charAt(j) == ' ') { continue; } else { temp
+							 * = temp.substring(j, temp.length()); break; } } s
+							 * += temp.replaceAll("\n", "").replaceAll("\r", "")
+							 * .replaceAll("\t", "");
+							 */
 						}
+
 						in.close();
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					if (node.getChildNodes().item(1).getNodeName().equals("")) {
+					if (!node.getChildNodes().item(1).hasChildNodes()) {
 						return s;
 					}
 					return writeData(s, node, xpath);
