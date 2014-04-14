@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import kz.beesoft.wsdl.WParser;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -36,7 +37,6 @@ public class SoapControllerServlet extends HttpServlet {
 			+ File.separator
 			+ "soap"
 			+ File.separator + "ws";
-
 
 	public SoapControllerServlet() {
 		super();
@@ -110,7 +110,6 @@ public class SoapControllerServlet extends HttpServlet {
 				try {
 					List<FileItem> fileItems = upload.parseRequest(request);
 					Iterator<FileItem> i = fileItems.iterator();
-					System.out.println(fileItems.size());
 					while (i.hasNext()) {
 						FileItem fi = (FileItem) i.next();
 						if (!fi.isFormField()) {
@@ -128,19 +127,26 @@ public class SoapControllerServlet extends HttpServlet {
 					wsdlFile.createNewFile();
 					uploadedFile.write(wsdlFile);
 
-					
 					File configFile = new File(path + File.separator + service
 							+ File.separator + "config.xml");
-//					configFile.createNewFile();
-//					uploadedFile.write(configFile);
+					configFile.createNewFile();
+
 					WParser wp = new WParser(path + File.separator + service
 							+ File.separator + service + ".wsdl");
-					String xsdPath= "C:/Users/Kudaybergen/Documents/GitHub/stub-application/stub-app/src/main/webapp/WEB-INF/templates/configxsd.xsd";
-					String xmlPath= path + File.separator + service
+					String xsdPath = System
+							.getProperty("jboss.server.temp.dir")
+							+ File.separator
+							+ "soap"
+							+ File.separator
+							+ "configxsd.xsd";
+					String xmlPath = path + File.separator + service
 							+ File.separator + "config.xml";
-					wp.writeXML(configFile,service);
-					wp.validateXMLSchema(xsdPath, xmlPath);
-					
+					wp.writeXML(configFile, service);
+					if (wp.validateXMLSchema(xsdPath, xmlPath)) {
+						System.out.println("Config validation complete");
+					} else {
+						System.out.println("Error");
+					}
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -169,7 +175,7 @@ public class SoapControllerServlet extends HttpServlet {
 					}
 					in.close();
 					XMLSerializer xmlSerializer = new XMLSerializer();
-					
+
 					JSON json = xmlSerializer.read(xml);
 					result = json.toString().replace("@", "");
 				}
