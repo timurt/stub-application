@@ -56,9 +56,7 @@ public class SoapProcessor implements IProcessor {
 		domFactory.setNamespaceAware(true);
 		DocumentBuilder builder = domFactory.newDocumentBuilder();
 		Document doc = builder.parse(new InputSource(new StringReader(mess)));
-		System.out.println(mess);
-		System.out.println(path);
-		// Create XPathFactory object
+		
 		XPathExpression expr = xpath.compile(path);
 
 		Node node = (Node) expr.evaluate(doc, XPathConstants.NODE);
