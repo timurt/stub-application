@@ -1,6 +1,8 @@
 package kz.beesoft.servlet;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Iterator;
@@ -12,8 +14,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import kz.beesoft.wsdl.WParser;
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.xml.XMLSerializer;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -21,14 +26,18 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 @WebServlet("/soap/*")
 public class SoapControllerServlet extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private static final int MAX_MEMORY_SIZE = 1024 * 1024 * 2;
 	private static final int MAX_REQUEST_SIZE = 1024 * 1024;
 
-	private static final String path = System.getProperty("jboss.server.temp.dir")
-			+ File.separator + "soap" + File.separator + "ws";;
+	private static final String path = System
+			.getProperty("jboss.server.temp.dir")
+			+ File.separator
+			+ "soap"
+			+ File.separator + "ws";
+
 	public SoapControllerServlet() {
 		super();
 	}
@@ -46,25 +55,25 @@ public class SoapControllerServlet extends HttpServlet {
 
 	private void process(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
-		//Angular JS response headers
+		// Angular JS response headers
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Access-Control-Allow-Headers",
 				"X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
 		response.addHeader("Access-Control-Allow-Methods",
 				"POST, GET, OPTIONS, PUT, DELETE, HEAD");
-		
+
 		response.addHeader("Access-Control-Max-Age", "1728000");
 		response.setContentType("application/json; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
-		
-		//Requests /soap/create /soap/edit /soap/services /soap/delete
+
+		// Requests /soap/create /soap/edit /soap/services /soap/delete
 		String[] parts = request.getRequestURI().toString().split("/");
-		
+
 		String result = "";
 		if (parts.length >= 4) {
 			String action = parts[3];
-			
-			//Returns JSON of all services
+
+			// Returns JSON of all services
 			if ("services".equals(action)) {
 
 				JSONArray services = new JSONArray();
@@ -83,8 +92,8 @@ public class SoapControllerServlet extends HttpServlet {
 				if (services != null) {
 					result = services.toString();
 				}
-				
-			//Creates new service with specified name and wsdl file
+
+				// Creates new service with specified name and wsdl file
 			} else if ("create".equals(action)) {
 
 				String service = "";
@@ -101,7 +110,6 @@ public class SoapControllerServlet extends HttpServlet {
 				try {
 					List<FileItem> fileItems = upload.parseRequest(request);
 					Iterator<FileItem> i = fileItems.iterator();
-					System.out.println(fileItems.size());
 					while (i.hasNext()) {
 						FileItem fi = (FileItem) i.next();
 						if (!fi.isFormField()) {
@@ -118,7 +126,28 @@ public class SoapControllerServlet extends HttpServlet {
 							+ File.separator + service + ".wsdl");
 					wsdlFile.createNewFile();
 					uploadedFile.write(wsdlFile);
-					
+
+					File configFile = new File(path + File.separator + service
+							+ File.separator + "config.xml");
+					configFile.createNewFile();
+
+					WParser wp = new WParser(path + File.separator + service
+							+ File.separator + service + ".wsdl");
+					String xsdPath = System
+							.getProperty("jboss.server.temp.dir")
+							+ File.separator
+							+ "soap"
+							+ File.separator
+							+ "configxsd.xsd";
+					String xmlPath = path + File.separator + service
+							+ File.separator + "config.xml";
+					wp.writeXML(configFile, service);
+					if (wp.validateXMLSchema(xsdPath, xmlPath)) {
+						System.out.println("Config validation complete");
+					} else {
+						System.out.println("Error");
+					}
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -137,9 +166,18 @@ public class SoapControllerServlet extends HttpServlet {
 
 			} else if ("service".equals(action)) {
 				if (parts.length >= 5) {
-					
-					//Service service = parser.parseWSDL(parts[4]);
-					//result = service.toJSON();
+					BufferedReader in = new BufferedReader(new FileReader(path
+							+ File.separator + parts[4] + File.separator
+							+ "config.xml"));
+					String xml = "";
+					while (in.ready()) {
+						xml += in.readLine();
+					}
+					in.close();
+					XMLSerializer xmlSerializer = new XMLSerializer();
+
+					JSON json = xmlSerializer.read(xml);
+					result = json.toString().replace("@", "");
 				}
 			}
 		}
