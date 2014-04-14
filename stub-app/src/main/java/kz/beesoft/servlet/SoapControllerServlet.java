@@ -21,14 +21,18 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 @WebServlet("/soap/*")
 public class SoapControllerServlet extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private static final int MAX_MEMORY_SIZE = 1024 * 1024 * 2;
 	private static final int MAX_REQUEST_SIZE = 1024 * 1024;
 
-	private static final String path = System.getProperty("jboss.server.temp.dir")
-			+ File.separator + "soap" + File.separator + "ws";;
+	private static final String path = System
+			.getProperty("jboss.server.temp.dir")
+			+ File.separator
+			+ "soap"
+			+ File.separator + "ws";;
+
 	public SoapControllerServlet() {
 		super();
 	}
@@ -118,6 +122,19 @@ public class SoapControllerServlet extends HttpServlet {
 							+ File.separator + service + ".wsdl");
 					wsdlFile.createNewFile();
 					uploadedFile.write(wsdlFile);
+					
+					File configFile = new File(path + File.separator + service
+							+ File.separator + "config.xml");
+//					configFile.createNewFile();
+//					uploadedFile.write(configFile);
+					WParser wp = new WParser(path + File.separator + service
+							+ File.separator + service + ".wsdl");
+					String xsdPath= "C:/Users/Kudaybergen/Documents/GitHub/stub-application/stub-app/src/main/webapp/WEB-INF/templates/configxsd.xsd";
+					String xmlPath= path + File.separator + service
+							+ File.separator + "config.xml";
+					wp.writeXML(configFile,service);
+					wp.validateXMLSchema(xsdPath, xmlPath);
+					
 					
 				} catch (Exception e) {
 					e.printStackTrace();
