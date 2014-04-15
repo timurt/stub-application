@@ -1,0 +1,27 @@
+<!doctype html>
+<html ng-app="listApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.5/angular.min.js"></script>
+    <script src="js/controllers.js"></script>
+    <title> Stub Server </title>
+  </head>
+  <body>
+    <div ng-controller="ListCtrl">
+    <h1>List of Services</h1>
+       <ul>
+        <li ng-repeat="service in services">
+          <span>{{service.text}}</span>
+          <form method="GET" action="edit.html">
+
+            <input type="hidden" name="service" value="{{service.text}}"/>
+            <input type="submit" value="edit"/>
+          </form>
+          <form ng-submit="deleteService(service.text)">
+            <input type="submit" value="delete"/>
+          </form>
+        </li>
+      </ul>
+      <a href="index.html"> Cancel </a>
+    </div>
+  </body>
+</html>
