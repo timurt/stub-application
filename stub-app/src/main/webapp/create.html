@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+  
+    <title> Stub Server </title>
+  </head>
+  <body>
+    <div>
+    <h1>Create new Service</h1>
+      <form method="POST" action="http://localhost:8080/stub-app/soap/create" enctype="multipart/form-data">
+
+      <table>
+        <tr>
+          <td>  <label for="service">Service name</label></td>
+          <td>  <input type="text" id="service" name="service" required/></td>
+        </tr>
+        <tr>
+          <td>  <label for="file">WSDL File</label></td>
+          <td>  <input type="file" name="file" id="file" required/></td>
+        </tr>
+      </table>
+      <input type="submit" value="create"/>
+      </form>
+      <a href="index.html"> Cancel </a>
+    </div>
+  </body>
+</html>

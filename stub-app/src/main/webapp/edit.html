@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.js"></script>
+  <script src="js/controllers.js"></script>
+  <script src="js/upload.js"></script>
+  
+  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+
+  <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.6.0.js"></script>
+  <title> Stub Server </title>
+</head>
+<body>
+  <div  ng-app="editApp">
+    <div ng-controller="EditCtrl">
+
+      <h1>Edit Service</h1>
+
+
+      
+      <div class="container-fluid">
+        <div class="col-md-8">
+
+          
+         
+        </div>
+        <hr>
+        <div class="col-md-4">
+        <h4>Methods</h4>
+          <input ng-model="query.name">
+
+        </div> 
+        <div class="col-md-4">
+        <table>
+          <tr ng-repeat="method in service.methods | filter:query">
+            <td>{{method.name}}</td>
+            <td> <button class="btn" ng-click="open(method)">Edit</button></td>
+          </tr>
+        </table>
+         
+
+        </div> 
+       
+      
+
+        <script type="text/ng-template" id="myModalContent.html">
+
+          <div class="modal-header">
+            <h3>{{method.name}}</h3>
+          </div>
+          <div class="modal-body">
+          <div class="col-md-6">
+            <h4>Request Template</h4>
+            <textarea rows="20" style="width: 362px">{{requestTemplate}}</textarea>
+            <form>
+              <ul>
+                <li><button class="btn">Generate from WSDL</button></li>
+                <li><input type="file" ng-file-select="onFileSelect($files)"></li>
+                <i ng-hide="imageSrc">Select file of Request Template</i>
+                
+                <li><button class="btn">Save</button><button class="btn">Cancel</button></li>
+              </ul>
+              
+  
+            </form>
+            
+          </div>
+            <h4>Variables</h4>
+            <ul>
+              <li ng-repeat="variable in method.variables">
+                Key {{variable.key}}
+                Path {{variable.path}}
+              </li>
+            </ul>
+
+            <h4>Cases</h4>  
+            <ul>
+              <li ng-repeat="case in method.cases">
+                Test {{case.test}}
+                Response File {{case.file}}
+                <h4>Outputs</h4>
+                <ul>
+                  <li ng-repeat="output in case.outputs">
+                    {{output}}
+
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <ul>
+              <li ng-repeat="item in items">
+                <a ng-click="selected.item = item">{{ item }}</a>
+              </li>
+            </ul>
+            Selected: <b>{{ selected.item }}</b>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+          </div>
+        </script>
+      </div> 
+
+    </div>
+  </div>   
+  <a href="index.html" class> Cancel </a>
+</body>
+</html>
