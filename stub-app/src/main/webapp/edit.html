@@ -1,99 +1,202 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.js"></script>
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+
+
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.js"></script>
+  <script src="js/bootstrap.min.js"></script>
   <script src="js/controllers.js"></script>
   <script src="js/upload.js"></script>
-  
+  <link href="css/style.css" rel="stylesheet">
   <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
-
   <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.6.0.js"></script>
+
+  
   <title> Stub Server </title>
 </head>
 <body>
+<div class="container">
+<div class="unit">
   <div  ng-app="editApp">
     <div ng-controller="EditCtrl">
+   
+      <h1>Service "{{name}}"</h1>
 
-      <h1>Edit Service</h1>
-
-
-      
-      <div class="container-fluid">
-        <div class="col-md-8">
-
-          
-         
-        </div>
-        <hr>
         <div class="col-md-4">
         <h4>Methods</h4>
-          <input ng-model="query.name">
-
-        </div> 
-        <div class="col-md-4">
-        <table>
+          <div class="input-append">
+            <input ng-model="query.name" class="span2" id="appendedInputButton" type="text">
+            <button class="btn" type="button" disabled>Search</button>
+          </div>
+         
+          <table>
           <tr ng-repeat="method in service.methods | filter:query">
-            <td>{{method.name}}</td>
-            <td> <button class="btn" ng-click="open(method)">Edit</button></td>
+            <td><label>{{method.name}}</label></td>
+            <td> <button class="btn btn-primary" ng-click="open(method)">Edit</button></td>
           </tr>
         </table>
-         
-
         </div> 
-       
-      
+        
 
-        <script type="text/ng-template" id="myModalContent.html">
+        <script type="text/ng-template" id="modal.html">
 
           <div class="modal-header">
             <h3>{{method.name}}</h3>
           </div>
           <div class="modal-body">
-          <div class="col-md-6">
-            <h4>Request Template</h4>
-            <textarea rows="20" style="width: 362px">{{requestTemplate}}</textarea>
+
+
+
+<div class="accordion" id="accordion1">
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
+        Templates
+      </a>
+    </div>
+    <div id="collapseOne" class="accordion-body collapse">
+      <div class="accordion-inner">
+        <div class="col-md-4">
+            <h4>SOAP Request Template</h4>
+           
             <form>
-              <ul>
-                <li><button class="btn">Generate from WSDL</button></li>
-                <li><input type="file" ng-file-select="onFileSelect($files)"></li>
-                <i ng-hide="imageSrc">Select file of Request Template</i>
                 
-                <li><button class="btn">Save</button><button class="btn">Cancel</button></li>
-              </ul>
-              
-  
+                <input type="file" ng-file-select-request="onFileSelect($files)">
+                <br/>
+                <i ng-hide="requestTemplate">Select file of Request Template</i>
+               
             </form>
             
           </div>
-            <h4>Variables</h4>
-            <ul>
-              <li ng-repeat="variable in method.variables">
-                Key {{variable.key}}
-                Path {{variable.path}}
-              </li>
-            </ul>
 
-            <h4>Cases</h4>  
-            <ul>
-              <li ng-repeat="case in method.cases">
-                Test {{case.test}}
-                Response File {{case.file}}
-                <h4>Outputs</h4>
-                <ul>
-                  <li ng-repeat="output in case.outputs">
-                    {{output}}
+          <div class="col-md-4">
+            <h4>SOAP Response Template</h4> 
+           
+            <form>
+               
+                <input type="file" ng-file-select-response="onFileSelect($files)">
+                <br/>
+                <i ng-hide="responseTemplate">Select file of Response Template</i>
+               
+            </form>
+            
+          </div>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseTwo">
+        Variables
+      </a>
+    </div>
+    <div id="collapseTwo" class="accordion-body collapse">
+      <div class="accordion-inner">
+        <h4>Variables</h4>
+          <table>
+                <tr ng-repeat="variable in method.variables">
+                  <td>{{beautyVariable(variable.key)}}</td>
+                  <td><button class="btn btn-info" ng-click="viewVariable(variable.key)">View</button>
+                  <button class="btn btn-danger" ng-click="deleteVariable(variable.key)">Delete</button></td>
+                </tr>
+                <tr>
+                  
+                  <td><button class="btn" data-toggle="collapse" data-target="#newvariable">New variable</button> </td>
+                </tr>
+              </table>
+              
+              <div id="newvariable" class="collapse" >  
+                <div class="accordion-inner">
+                  <div class="container">
+                    <table>
+                      <tr>
+                        <td><label>Key</label></td>
+                        <td>
+                          <div class="input-prepend">
+                            <span class="add-on">:</span>
+                            <input class="span2" id="prependedInput" size="16" type="text" placeholder="Variable name" ng-model="variablename">
+                          
+                             
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Path</td>
+                        <td>JSTREE</td>
+                      </tr>
+                      <tr>
+                        <td><button class="btn btn-success" ng-click="createVariable(variablename,'')">Add</button></td>
+                      </tr>
+                    </table>
+                    
+                    
+                  </div>
+                </div>
+              </div>
 
-                  </li>
-                </ul>
-              </li>
-            </ul>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree">
+        Cases
+      </a>
+    </div>
+    <div id="collapseThree" class="accordion-body collapse">
+      <div class="accordion-inner">
+         <h4>Cases</h4>
+            
+            
+              <table>
+                <tr ng-repeat="case in method.cases">
+                  <td>{{case.test}}</td>
+                  <td><button class="btn btn-info" ng-click="viewCase(case.test)">View</button>
+                  <button class="btn btn-danger" ng-click="deleteCase(case.test)">Delete</button></td>
+                </tr>
+                <tr>
+                  <td><button class="btn" data-toggle="collapse" data-target="#newcase">New case</button> </td>
+                  
+                </tr>
+              </table>
 
-            <ul>
-              <li ng-repeat="item in items">
-                <a ng-click="selected.item = item">{{ item }}</a>
-              </li>
-            </ul>
-            Selected: <b>{{ selected.item }}</b>
+
+              <div id="newcase" class="collapse" >  
+                <div class="accordion-inner">
+                  <div class="container">
+                    <table>
+                      <tr>
+                        <td><label>Test</label></td>
+                        <td>
+                          <div>
+                            <input type="text" id="casename" my-directive="test" ng-model="casename" class="span3" placeholder="Case test">
+                            
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><label>Output File</label></td>
+                        <td><input type="file" ng-file-select-output="onFileSelect($files)" ></td>
+                      </tr>
+                      <tr>
+                        <td><button class="btn btn-success" ng-click="createCase()">Add</button></td>
+                      </tr>
+                    </table>
+                    
+                    
+                  </div>
+                </div>
+              </div>
+
+
+      </div>
+    </div>
+  </div>
+</di
+            
           </div>
           <div class="modal-footer">
             <button class="btn btn-primary" ng-click="ok()">OK</button>
@@ -102,8 +205,12 @@
         </script>
       </div> 
 
-    </div>
+   </div>
+    <a href="index.html" class="btn btn-inverse"> Cancel </a>
   </div>   
-  <a href="index.html" class> Cancel </a>
+ 
+     
+      
+      </div>
 </body>
 </html>
