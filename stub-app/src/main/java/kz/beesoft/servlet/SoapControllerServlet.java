@@ -147,6 +147,7 @@ public class SoapControllerServlet extends HttpServlet {
 					} else {
 						System.out.println("Error");
 					}
+					response.sendRedirect(request.getContextPath()+"/edit.html?service="+service);
 
 				} catch (Exception e) {
 					e.printStackTrace();
