@@ -1,5 +1,6 @@
 package kz.beesoft.servlet;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -147,7 +148,8 @@ public class SoapControllerServlet extends HttpServlet {
 					} else {
 						System.out.println("Error");
 					}
-					response.sendRedirect(request.getContextPath()+"/edit.html?service="+service);
+					response.sendRedirect(request.getContextPath()
+							+ "/edit.html?service=" + service);
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -167,18 +169,63 @@ public class SoapControllerServlet extends HttpServlet {
 
 			} else if ("service".equals(action)) {
 				if (parts.length >= 5) {
-					BufferedReader in = new BufferedReader(new FileReader(path
-							+ File.separator + parts[4] + File.separator
-							+ "config.xml"));
-					String xml = "";
-					while (in.ready()) {
-						xml += in.readLine();
-					}
-					in.close();
-					XMLSerializer xmlSerializer = new XMLSerializer();
+					if (parts.length >= 7 && parts[5].equals("grequest")) {
+						response.setContentType("application/xml; charset=UTF-8");
+						BufferedReader in = new BufferedReader(new FileReader(
+								path + File.separator + parts[4]
+										+ File.separator + "templates"
+										+ File.separator + parts[6]
+										+ File.separator + "request.xml"));
 
-					JSON json = xmlSerializer.read(xml);
-					result = json.toString().replace("@", "");
+						String xml = "";
+						while (in.ready()) {
+							xml += in.readLine();
+						}
+						result = xml;
+						in.close();
+					} else if (parts.length >= 7
+							&& parts[5].equals("srequest")) {
+						response.setContentType("application/xml; charset=UTF-8");
+						PrintWriter out = new PrintWriter(path + File.separator + parts[4]
+								+ File.separator + "templates"
+								+ File.separator + parts[6]
+								+ File.separator + "request.xml");
+						
+						String xml = "";
+						byte[] xmlData = new byte[request.getContentLength()];
+						try {
+							BufferedInputStream in = new BufferedInputStream(
+									request.getInputStream());
+							in.read(xmlData, 0, xmlData.length);
+							if (request.getCharacterEncoding() != null) {
+								xml = new String(xmlData,
+										request.getCharacterEncoding());
+							} else {
+
+								xml = new String(xmlData);
+							}
+							in.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						System.out.println(xml);
+						out.println(xml);
+						out.flush();
+						out.close();
+					} else {
+						BufferedReader in = new BufferedReader(new FileReader(
+								path + File.separator + parts[4]
+										+ File.separator + "config.xml"));
+						String xml = "";
+						while (in.ready()) {
+							xml += in.readLine();
+						}
+						in.close();
+						XMLSerializer xmlSerializer = new XMLSerializer();
+
+						JSON json = xmlSerializer.read(xml);
+						result = json.toString().replace("@", "");
+					}
 				}
 			}
 		}

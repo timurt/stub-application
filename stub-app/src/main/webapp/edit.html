@@ -4,14 +4,22 @@
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
   <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-
+  <link href="css/style.css" rel="stylesheet">
+  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
 
   <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.js"></script>
+
+  <script src="js/abn_tree_directive.js">    </script>
+  <link rel="stylesheet" href="css/abn_tree.css">
+
+
+  <script src="js/tinyxmlw3cdom.js"></script>
+  <script src="js/tinyxmlsax.js"></script>
+
   <script src="js/bootstrap.min.js"></script>
   <script src="js/controllers.js"></script>
   <script src="js/upload.js"></script>
-  <link href="css/style.css" rel="stylesheet">
-  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+  
   <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.6.0.js"></script>
 
   
@@ -64,7 +72,7 @@
            
             <form>
                 
-                <input type="file" ng-file-select-request="onFileSelect($files)">
+                <input type="file" ng-file-select="onFileSelect($files)" id="requestTemplate">
                 <br/>
                 <i ng-hide="requestTemplate">Select file of Request Template</i>
                
@@ -77,7 +85,7 @@
            
             <form>
                
-                <input type="file" ng-file-select-response="onFileSelect($files)">
+                <input type="file" ng-file-select="onFileSelect($files)" id="responseTemplate">
                 <br/>
                 <i ng-hide="responseTemplate">Select file of Response Template</i>
                
@@ -104,7 +112,7 @@
                 </tr>
                 <tr>
                   
-                  <td><button class="btn" data-toggle="collapse" data-target="#newvariable">New variable</button> </td>
+                  <td><button class="btn" data-toggle="collapse" data-target="#newvariable" ng-click="loadTree()">New variable</button> </td>
                 </tr>
               </table>
               
@@ -125,10 +133,17 @@
                       </tr>
                       <tr>
                         <td>Path</td>
-                        <td>JSTREE</td>
+                        
+                          <td>
+                            <div style="width:400px;background:whitesmoke;border:1px solid lightgray;border-radius:5px;">
+                            <span ng-if="doing_async">...loading...</span>
+                            <abn-tree tree-data="my_data" tree-control="my_tree" on-select="my_tree_handler(branch)" expand-level="1" ></abn-tree>
+                            </div>
+              
+                        </td>
                       </tr>
                       <tr>
-                        <td><button class="btn btn-success" ng-click="createVariable(variablename,'')">Add</button></td>
+                        <td><button class="btn btn-success" ng-click="createVariable(variablename)">Add</button></td>
                       </tr>
                     </table>
                     
@@ -172,7 +187,7 @@
                         <td><label>Test</label></td>
                         <td>
                           <div>
-                            <input type="text" id="casename" my-directive="test" ng-model="casename" class="span3" placeholder="Case test">
+                            <input type="text" id="casename" ng-auto-test="test" ng-model="casename" class="span3" placeholder="Case test">
                             
                           </div>
                         </td>
