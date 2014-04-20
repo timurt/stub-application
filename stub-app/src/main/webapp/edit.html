@@ -1,55 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-  <link href="css/style.css" rel="stylesheet">
-  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<link rel="stylesheet"
+	href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<link href="css/style.css" rel="stylesheet">
+<link
+	href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"
+	rel="stylesheet">
 
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.js"></script>
 
-  <script src="js/abn_tree_directive.js">    </script>
-  <link rel="stylesheet" href="css/abn_tree.css">
+<script src="js/abn_tree_directive.js">    </script>
+<link rel="stylesheet" href="css/abn_tree.css">
 
 
-  <script src="js/tinyxmlw3cdom.js"></script>
-  <script src="js/tinyxmlsax.js"></script>
+<script src="js/tinyxmlw3cdom.js"></script>
+<script src="js/tinyxmlsax.js"></script>
 
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/controllers.js"></script>
-  <script src="js/upload.js"></script>
-  
-  <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.6.0.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/controllers.js"></script>
+<script src="js/upload.js"></script>
 
-  
-  <title> Stub Server </title>
+<script
+	src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.6.0.js"></script>
+
+
+<title>Stub Server</title>
 </head>
 <body>
-<div class="container">
-<div class="unit">
-  <div  ng-app="editApp">
-    <div ng-controller="EditCtrl">
-   
-      <h1>Service "{{name}}"</h1>
+	<div class="container">
+		<div class="unit">
+			<div ng-app="editApp">
+				<div ng-controller="EditCtrl">
 
-        <div class="col-md-4">
-        <h4>Methods</h4>
-          <div class="input-append">
-            <input ng-model="query.name" class="span2" id="appendedInputButton" type="text">
-            <button class="btn" type="button" disabled>Search</button>
-          </div>
-         
-          <table>
-          <tr ng-repeat="method in service.methods | filter:query">
-            <td><label>{{method.name}}</label></td>
-            <td> <button class="btn btn-primary" ng-click="open(method)">Edit</button></td>
-          </tr>
-        </table>
-        </div> 
-        
+					<h1>Service "{{name}}"</h1>
 
-        <script type="text/ng-template" id="modal.html">
+					<div class="col-md-4">
+						<h4>Methods</h4>
+						<div class="input-append">
+							<input ng-model="query.name" class="span2"
+								id="appendedInputButton" type="text">
+							<button class="btn" type="button" disabled>Search</button>
+						</div>
+
+						<table>
+							<tr ng-repeat="method in service.methods | filter:query">
+								<td><label>{{method.name}}</label></td>
+								<td>
+									<button class="btn btn-primary" ng-click="open(method)">Edit</button>
+								</td>
+							</tr>
+						</table>
+					</div>
+
+
+					<script type="text/ng-template" id="modal.html">
 
           <div class="modal-header">
             <h3>{{method.name}}</h3>
@@ -125,7 +133,7 @@
                         <td>
                           <div class="input-prepend">
                             <span class="add-on">:</span>
-                            <input class="span2" id="prependedInput" size="16" type="text" placeholder="Variable name" ng-model="variablename">
+                            <input class="span2" id="variablename" size="16" type="text" placeholder="Variable name" ng-model="variablename">
                           
                              
                           </div>
@@ -137,7 +145,7 @@
                           <td>
                             <div style="width:400px;background:whitesmoke;border:1px solid lightgray;border-radius:5px;">
                             <span ng-if="doing_async">...loading...</span>
-                            <abn-tree tree-data="my_data" tree-control="my_tree" on-select="my_tree_handler(branch)" expand-level="1" ></abn-tree>
+                            <abn-tree tree-data="variable_data" tree-control="variable_tree" on-select="variable_tree_handler(branch)" expand-level="1" ></abn-tree>
                             </div>
               
                         </td>
@@ -173,7 +181,7 @@
                   <button class="btn btn-danger" ng-click="deleteCase(case.test)">Delete</button></td>
                 </tr>
                 <tr>
-                  <td><button class="btn" data-toggle="collapse" data-target="#newcase">New case</button> </td>
+                  <td><button class="btn" data-toggle="collapse" data-target="#newcase" ng-click="initCase()">New case</button> </td>
                   
                 </tr>
               </table>
@@ -194,12 +202,49 @@
                       </tr>
                       <tr>
                         <td><label>Output File</label></td>
-                        <td><input type="file" ng-file-select-output="onFileSelect($files)" ></td>
+                        <td><input type="file" ng-file-select="onFileSelect($files)" id="responseFile"></td>
+
                       </tr>
                       <tr>
-                        <td><button class="btn btn-success" ng-click="createCase()">Add</button></td>
+                          <td><h4>Outputs</h4></td>
                       </tr>
-                    </table>
+                      <tr ng-repeat="output in outputs">
+                        <td>{{output.value}}</td>
+                        <td><button class="btn btn-info" ng-click="viewOutput(output.value)">View</button>
+                  <button class="btn btn-danger" ng-click="deleteOutput(output.value)">Delete</button></td>
+                      </tr>
+                      </table>
+                      <div class="container">
+                        <button class="btn" data-toggle="collapse" data-target="#newoutput">New output</button>
+                      
+                        <div id="newoutput" class="collapse" >  
+                          <div class="accordion-inner">
+                            <table>
+                              <tr>
+                                <td>Value</td>
+                                <td>
+                                  <input type="text" id="outputname" ng-model="outputname" class="span3" placeholder="Output value">
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Path</td>
+                                <td>
+                                     <div style="width:400px;background:whitesmoke;border:1px solid lightgray;border-radius:5px;">
+                            <span ng-if="doing_async">...loading...</span>
+                            <abn-tree tree-data="output_data" tree-control="output_tree" on-select="output_tree_handler(branch)" expand-level="1" ></abn-tree>
+                            </div>
+              
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                          <button class="btn btn-success" ng-click="createOutput(outputname)">Create Output</button>
+                        </div>
+                        
+                      </div>
+                      </br>
+
+                      <button class="btn btn-success" ng-click="createCase(casename)">Add</button>
                     
                     
                   </div>
@@ -218,14 +263,14 @@
             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
           </div>
         </script>
-      </div> 
+				</div>
 
-   </div>
-    <a href="index.html" class="btn btn-inverse"> Cancel </a>
-  </div>   
- 
-     
-      
-      </div>
+			</div>
+			<a href="index.html" class="btn btn-inverse"> Cancel </a>
+		</div>
+
+
+
+	</div>
 </body>
 </html>
