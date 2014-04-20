@@ -1,27 +1,35 @@
 <!doctype html>
-<html>
-  <head>
-  
-    <title> Stub Server </title>
-  </head>
-  <body>
-    <div>
-    <h1>Create new Service</h1>
-      <form method="POST" action="http://localhost:8080/stub-app/soap/create" enctype="multipart/form-data">
+<html ng-app>
+<head>
+<link
+	href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"
+	rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<title>Stub Server</title>
+</head>
+<body>
+	<div class="container">
+		<div class="unit">
+			<h1>Create service</h1>
+			<form method="POST"
+				action="http://localhost:8080/stub-app/soap/create"
+				enctype="multipart/form-data">
 
-      <table>
-        <tr>
-          <td>  <label for="service">Service name</label></td>
-          <td>  <input type="text" id="service" name="service" required/></td>
-        </tr>
-        <tr>
-          <td>  <label for="file">WSDL File</label></td>
-          <td>  <input type="file" name="file" id="file" required/></td>
-        </tr>
-      </table>
-      <input type="submit" value="create"/>
-      </form>
-      <a href="index.html"> Cancel </a>
-    </div>
-  </body>
+				<table style="margin-bottom: 10px">
+					<tr>
+						<td><label for="service">Service name</label></td>
+						<td><input type="text" id="service" name="service" required
+							class="input-medium" /></td>
+					</tr>
+					<tr>
+						<td><label for="file">WSDL File</label></td>
+						<td><input type="file" name="file" id="file" required /></td>
+					</tr>
+				</table>
+				<input type="submit" value="Create" class="btn btn-success" /> <a
+					href="index.html" class="btn btn-inverse"> Cancel </a>
+			</form>
+		</div>
+	</div>
+</body>
 </html>

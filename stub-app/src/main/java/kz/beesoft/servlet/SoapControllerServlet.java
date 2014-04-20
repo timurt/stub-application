@@ -1,5 +1,6 @@
 package kz.beesoft.servlet;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,6 +21,7 @@ import kz.beesoft.wsdl.WParser;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 import net.sf.json.xml.XMLSerializer;
 
 import org.apache.commons.fileupload.FileItem;
@@ -154,6 +156,8 @@ public class SoapControllerServlet extends HttpServlet {
 					} else {
 						System.out.println("Error");
 					}
+					response.sendRedirect(request.getContextPath()
+							+ "/edit.html?service=" + service);
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -173,23 +177,171 @@ public class SoapControllerServlet extends HttpServlet {
 
 			} else if ("service".equals(action)) {
 				if (parts.length >= 5) {
-					BufferedReader in = new BufferedReader(new FileReader(path
-							+ File.separator + parts[4] + File.separator
-							+ "config.xml"));
-					String xml = "";
-					while (in.ready()) {
-						xml += in.readLine();
-					}
-					in.close();
-					XMLSerializer xmlSerializer = new XMLSerializer();
+					if (parts.length >= 7 && parts[5].equals("grequest")) {
+						response.setContentType("application/xml; charset=UTF-8");
+						BufferedReader in = new BufferedReader(new FileReader(
+								path + File.separator + parts[4]
+										+ File.separator + "templates"
+										+ File.separator + parts[6]
+										+ File.separator + "request.xml"));
 
-					JSON json = xmlSerializer.read(xml);
-					result = json.toString().replace("@", "");
+						String xml = "";
+						while (in.ready()) {
+							xml += in.readLine();
+						}
+						result = xml;
+						in.close();
+					} else if (parts.length >= 7 && parts[5].equals("srequest")) {
+						response.setContentType("application/xml; charset=UTF-8");
+						PrintWriter out = new PrintWriter(path + File.separator
+								+ parts[4] + File.separator + "templates"
+								+ File.separator + parts[6] + File.separator
+								+ "request.xml");
+
+						String xml = "";
+						byte[] xmlData = new byte[request.getContentLength()];
+						try {
+							BufferedInputStream in = new BufferedInputStream(
+									request.getInputStream());
+							in.read(xmlData, 0, xmlData.length);
+							if (request.getCharacterEncoding() != null) {
+								xml = new String(xmlData,
+										request.getCharacterEncoding());
+							} else {
+
+								xml = new String(xmlData);
+							}
+							in.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						out.println(xml);
+						out.flush();
+						out.close();
+					} else if (parts.length >= 7
+							&& parts[5].equals("gresponse")) {
+						response.setContentType("application/xml; charset=UTF-8");
+						BufferedReader in = new BufferedReader(new FileReader(
+								path + File.separator + parts[4]
+										+ File.separator + "templates"
+										+ File.separator + parts[6]
+										+ File.separator + "response.xml"));
+
+						String xml = "";
+						while (in.ready()) {
+							xml += in.readLine();
+						}
+						result = xml;
+						in.close();
+					} else if (parts.length >= 7
+							&& parts[5].equals("sresponse")) {
+						response.setContentType("application/xml; charset=UTF-8");
+						PrintWriter out = new PrintWriter(path + File.separator
+								+ parts[4] + File.separator + "templates"
+								+ File.separator + parts[6] + File.separator
+								+ "response.xml");
+
+						String xml = "";
+						byte[] xmlData = new byte[request.getContentLength()];
+						try {
+							BufferedInputStream in = new BufferedInputStream(
+									request.getInputStream());
+							in.read(xmlData, 0, xmlData.length);
+							if (request.getCharacterEncoding() != null) {
+								xml = new String(xmlData,
+										request.getCharacterEncoding());
+							} else {
+
+								xml = new String(xmlData);
+							}
+							in.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						out.println(xml);
+						out.flush();
+						out.close();
+					} else if (parts.length >= 8
+							&& parts[5].equals("fresponse")) {
+						response.setContentType("application/xml; charset=UTF-8");
+						PrintWriter out = new PrintWriter(path + File.separator
+								+ parts[4] + File.separator + "templates"
+								+ File.separator + parts[6] + File.separator
+								+ "responses" + File.separator + parts[7]);
+
+						String xml = "";
+						byte[] xmlData = new byte[request.getContentLength()];
+						try {
+							BufferedInputStream in = new BufferedInputStream(
+									request.getInputStream());
+							in.read(xmlData, 0, xmlData.length);
+							if (request.getCharacterEncoding() != null) {
+								xml = new String(xmlData,
+										request.getCharacterEncoding());
+							} else {
+
+								xml = new String(xmlData);
+							}
+							in.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						out.println(xml);
+						out.flush();
+						out.close();
+					} else if (parts.length >= 6 && parts[5].equals("save")) {
+						PrintWriter out = new PrintWriter(path + File.separator
+								+ parts[4] + File.separator + "config2.xml");
+
+						String xml = "";
+						byte[] xmlData = new byte[request.getContentLength()];
+						try {
+							BufferedInputStream in = new BufferedInputStream(
+									request.getInputStream());
+							in.read(xmlData, 0, xmlData.length);
+							if (request.getCharacterEncoding() != null) {
+								xml = new String(xmlData,
+										request.getCharacterEncoding());
+							} else {
+
+								xml = new String(xmlData);
+							}
+							in.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						
+						JSON json = JSONSerializer.toJSON(xml);
+						String config = JSONtoXML(json);
+						 out.println(config);
+						 out.flush();
+						 out.close();
+					} else {
+						BufferedReader in = new BufferedReader(new FileReader(
+								path + File.separator + parts[4]
+										+ File.separator + "config.xml"));
+						String xml = "";
+						while (in.ready()) {
+							xml += in.readLine();
+						}
+						in.close();
+						XMLSerializer xmlSerializer = new XMLSerializer();
+
+						JSON json = xmlSerializer.read(xml);
+						result = json.toString().replace("@", "");
+					}
 				}
 			}
 		}
 	}
+<<<<<<< HEAD
 	
+=======
+//Kadik eto tvoi method
+	private String JSONtoXML(JSON json) {
+		return "";
+	}
+>>>>>>> 51b856cb24ecf1731dc80d752726a427ec5b3b9b
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
