@@ -97,6 +97,7 @@ public class SoapControllerServlet extends HttpServlet {
 							services.add(service);
 						}
 					}
+				}else {
 				}
 				if (services != null) {
 					result = services.toString();
@@ -333,15 +334,16 @@ public class SoapControllerServlet extends HttpServlet {
 				}
 			}
 		}
+		PrintWriter out = response.getWriter();
+		out.println(result);
+		out.flush();
+		out.close();
 	}
-<<<<<<< HEAD
-	
-=======
-//Kadik eto tvoi method
+
+	//Kadik eto tvoi method
 	private String JSONtoXML(JSON json) {
 		return "";
 	}
->>>>>>> 51b856cb24ecf1731dc80d752726a427ec5b3b9b
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
