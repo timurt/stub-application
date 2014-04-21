@@ -3,9 +3,11 @@ package kz.beesoft.servlet;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,6 +27,11 @@ import net.sf.json.xml.XMLSerializer;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
+import com.predic8.wsdl.Message;
+import com.predic8.wsdl.Operation;
+import com.predic8.wsdl.Output;
+import com.predic8.wsdl.Part;
 
 @WebServlet("/soap/*")
 public class SoapControllerServlet extends HttpServlet {
@@ -90,6 +97,7 @@ public class SoapControllerServlet extends HttpServlet {
 							services.add(service);
 						}
 					}
+				}else {
 				}
 				if (services != null) {
 					result = services.toString();
@@ -133,8 +141,7 @@ public class SoapControllerServlet extends HttpServlet {
 							+ File.separator + "config.xml");
 					configFile.createNewFile();
 
-					WParser wp = new WParser(path + File.separator + service
-							+ File.separator + service + ".wsdl");
+					WParser wp = new WParser(path + File.separator + service+File.separator, service);
 					String xsdPath = System
 							.getProperty("jboss.server.temp.dir")
 							+ File.separator
@@ -144,6 +151,7 @@ public class SoapControllerServlet extends HttpServlet {
 					String xmlPath = path + File.separator + service
 							+ File.separator + "config.xml";
 					wp.writeXML(configFile, service);
+					wp.writeOp();
 					if (wp.validateXMLSchema(xsdPath, xmlPath)) {
 						System.out.println("Config validation complete");
 					} else {
@@ -327,11 +335,12 @@ public class SoapControllerServlet extends HttpServlet {
 			}
 		}
 		PrintWriter out = response.getWriter();
-		out.print(result);
+		out.println(result);
 		out.flush();
 		out.close();
 	}
-//Kadik eto tvoi method
+
+	//Kadik eto tvoi method
 	private String JSONtoXML(JSON json) {
 		return "";
 	}
