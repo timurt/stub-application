@@ -57,6 +57,7 @@ public class SoapProcessor implements IProcessor {
 		DocumentBuilder builder = domFactory.newDocumentBuilder();
 		Document doc = builder.parse(new InputSource(new StringReader(mess)));
 		
+		//System.out.println(path);
 		XPathExpression expr = xpath.compile(path);
 
 		Node node = (Node) expr.evaluate(doc, XPathConstants.NODE);
@@ -73,7 +74,6 @@ public class SoapProcessor implements IProcessor {
 
 			Node n = (Node) xpath.compile(path).evaluate(
 					loadXMLFromString(mess), XPathConstants.NODE);
-
 			for (int i = 0; i < n.getChildNodes().getLength(); i++) {
 				final_data.put(
 						(n.getChildNodes().item(i).getAttributes().item(0)
@@ -139,6 +139,7 @@ public class SoapProcessor implements IProcessor {
 			if (n.getChildNodes().item(i).getNodeName().equals("case")) {
 				if (compute(final_data, n.getChildNodes().item(i)
 						.getAttributes().item(0).getTextContent())) {
+					
 					return createResponse(mess, xpath, n.getChildNodes()
 							.item(i));
 				}
@@ -162,7 +163,6 @@ public class SoapProcessor implements IProcessor {
 				}
 			}
 		}
-		// System.out.println(s);
 		return Boolean.parseBoolean(engine.eval(s).toString());
 	}
 
@@ -186,7 +186,7 @@ public class SoapProcessor implements IProcessor {
 		 * "<case test=':iin == 123' /><case test=\":name == 'Baur'\" /><response></response><outputs><output path='/GetNameResponse/name' value='Baur'/>"
 		 * + "</outputs> </cases> </method></methods></config>";
 		 */
-		// System.out.println(config);
+		//System.out.println(config);
 		//System.out.println(request);
 		try {/*
 			PrintWriter out = new PrintWriter(new File("C:/jboss/jboss-as-7.1.0.Final/standalone/tmp/soap/ws/terminal/templates/ConversionRate/output.txt"));
@@ -250,7 +250,7 @@ public class SoapProcessor implements IProcessor {
 			});
 
 			path = parseConfig(config, request, path, xpath);
-
+			
 			return getCondition(config, xpath, method);
 		} catch (Exception e) {
 			e.printStackTrace();
