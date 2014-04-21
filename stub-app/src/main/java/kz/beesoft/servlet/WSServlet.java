@@ -72,26 +72,45 @@ public class WSServlet extends HttpServlet {
 
 		if (request.getContentLength() > 0) {
 
-			byte[] xmlData = new byte[request.getContentLength()];
 			try {
-				BufferedInputStream in = new BufferedInputStream(
-						request.getInputStream());
-				in.read(xmlData, 0, xmlData.length);
+				String result = "";
+				BufferedReader in = new BufferedReader(request.getReader());
+				String line = "";
+				while ((line = in.readLine()) != null) {
+					result += line;
+				}
+				in.close();/*
+							 * byte[] xmlData = new byte[1024];
+							 * BufferedInputStream in = new BufferedInputStream(
+							 * request.getInputStream());
+							 * 
+							 * 
+							 * while (in.read(xmlData, 0, 1024)!=-1) { //result
+							 * += new String(xmlData, //
+							 * request.getCharacterEncoding()); } xmlData =
+							 * result.getBytes();
+							 * 
+							 * PrintWriter out = new PrintWriter(
+							 * System.getProperty("jboss.server.temp.dir") +
+							 * File.separator + "output.txt");
+							 * out.println(result);
+							 */
+
 				if (request.getCharacterEncoding() != null) {
-					String s = new String(xmlData,
-							request.getCharacterEncoding());
+					String s = result;
+
 					int i = 0;
-					while(i < s.length()){
+					while (i < s.length()) {
 						if (s.charAt(i) == '<') {
 							String sub = s.substring(i);
 							String sub2 = sub.substring(0, sub.indexOf('>'));
-							xml+= sub2;
+							xml += sub2;
 							i += sub2.length();
-						}else{
-							if(s.charAt(i) == ' '){
+						} else {
+							if (s.charAt(i) == ' ') {
 								i++;
 								continue;
-							}else{
+							} else {
 								xml += s.charAt(i);
 								i++;
 							}
@@ -101,9 +120,11 @@ public class WSServlet extends HttpServlet {
 							.replaceAll("\t", "");
 				} else {
 
-					xml = new String(xmlData);
+					xml = result;
 				}
-				in.close();
+				// out.flush();
+				// out.close();
+				// in.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -120,7 +141,7 @@ public class WSServlet extends HttpServlet {
 			HttpServletResponse response) throws IOException {
 		response.setContentType("text/xml; charset=UTF-8");
 		PrintWriter out = response.getWriter();
-		
+
 		out.println(process(request, response));
 		out.close();
 
