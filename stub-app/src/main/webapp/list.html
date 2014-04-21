@@ -1,39 +1,44 @@
 <!doctype html>
 <html ng-app="listApp">
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.5/angular.min.js"></script>
-    <script src="js/controllers.js"></script>
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-    <title> Stub Server </title>
-  </head>
-  <body>
-  <div class="container">
-   <div class="unit">
-    <div ng-controller="ListCtrl">
-    <h1>Services list</h1>
-    <div>
-        <table class="table" width="100px">
-          <tr>
-            <th>Name</th>
-            <th>Actions</th>
-          </tr>
-          <tr ng-repeat="service in services">
-            <td><label>{{service.text}}</label></td>
-            <td> 
-            <form method="GET" action="edit.html" class="listform">
-              <button class="btn btn-danger" ng-click="deleteService(service.text)">Delete</button>
-              <input type="hidden" name="service" value="{{service.text}}"/>
-              <input type="submit" class="btn btn-primary" value="Edit"/>    </form>
-            </td>
-      </tr>
-       
-        </table>
+<head>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.5/angular.min.js"></script>
+<script src="js/controllers.js"></script>
+<link
+	href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"
+	rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<title>Stub Server</title>
+</head>
+<body>
+	<div class="container">
+		<div class="unit">
+			<div ng-controller="ListCtrl">
+				<h1>Services list</h1>
+				<div>
+					<table class="table" width="100px">
+						<tr>
+							<th>Name</th>
+							<th>Actions</th>
+						</tr>
+						<tr ng-repeat="service in services">
+							<td><label>{{service.text}}</label></td>
+							<td>
+								<form method="GET" action="edit.html" class="listform">
+									<button class="btn btn-danger"
+										ng-click="deleteService(service.text)">Delete</button>
+									<input type="hidden" name="service" value="{{service.text}}" />
+									<input type="submit" class="btn btn-primary" value="Edit" />
+								</form>
+							</td>
+						</tr>
 
-       </div>
-      <a href="index.html" class="btn btn-inverse"> Cancel </a>
-    </div>
-    </div>
-    </div>
-  </body>
+					</table>
+
+				</div>
+				<a href="index.html" class="btn btn-inverse"> Cancel </a>
+			</div>
+		</div>
+	</div>
+</body>
 </html>
