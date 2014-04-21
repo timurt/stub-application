@@ -1,6 +1,5 @@
 package kz.beesoft.servlet;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,6 +56,7 @@ public class WSServlet extends HttpServlet {
 						}
 						config += s.replaceAll("\n", "").replaceAll("\r", "")
 								.replaceAll("\t", "");
+						config = removeSpaces(config);
 					}
 					in.close();
 				} catch (FileNotFoundException e) {
@@ -79,23 +79,7 @@ public class WSServlet extends HttpServlet {
 				while ((line = in.readLine()) != null) {
 					result += line;
 				}
-				in.close();/*
-							 * byte[] xmlData = new byte[1024];
-							 * BufferedInputStream in = new BufferedInputStream(
-							 * request.getInputStream());
-							 * 
-							 * 
-							 * while (in.read(xmlData, 0, 1024)!=-1) { //result
-							 * += new String(xmlData, //
-							 * request.getCharacterEncoding()); } xmlData =
-							 * result.getBytes();
-							 * 
-							 * PrintWriter out = new PrintWriter(
-							 * System.getProperty("jboss.server.temp.dir") +
-							 * File.separator + "output.txt");
-							 * out.println(result);
-							 */
-
+				in.close();
 				if (request.getCharacterEncoding() != null) {
 					String s = result;
 
@@ -122,9 +106,6 @@ public class WSServlet extends HttpServlet {
 
 					xml = result;
 				}
-				// out.flush();
-				// out.close();
-				// in.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -135,6 +116,32 @@ public class WSServlet extends HttpServlet {
 		
 		return processor.process(config, xml);
 
+	}
+
+	private String removeSpaces(String s) {
+		String result = "";
+		boolean t = true;
+		for (int i = 0; i < s.length(); i++) {
+			if (s.charAt(i) != ' ')
+				t = true;
+			if (t) {
+				result += s.charAt(i);
+			}
+			if (s.charAt(i) == '>')
+				t = false;
+		}
+		s = result;
+		result = "";
+		for (int i = (s.length() - 1); i >= 0; i--) {
+			if (s.charAt(i) != ' ')
+				t = true;
+			if (t) {
+				result = s.charAt(i) + result;
+			}
+			if (s.charAt(i) == '<')
+				t = false;
+		}
+		return result;
 	}
 
 	protected void doGet(HttpServletRequest request,
