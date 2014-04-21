@@ -47,6 +47,7 @@ public class WParser {
 		for (PortType pt : defs.getPortTypes()) {
 			for (Operation op : pt.getOperations()) {
 				String mm = op.getName();
+				if(!methods.contains(mm))
 				methods.add(mm);
 			}
 		}

@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -186,8 +187,11 @@ public class SoapProcessor implements IProcessor {
 		 * + "</outputs> </cases> </method></methods></config>";
 		 */
 		// System.out.println(config);
-		// System.out.println(request);
-		try {
+		//System.out.println(request);
+		try {/*
+			PrintWriter out = new PrintWriter(new File("C:/jboss/jboss-as-7.1.0.Final/standalone/tmp/soap/ws/terminal/templates/ConversionRate/output.txt"));
+			out.println(request);
+			out.close();*/
 			InputStream is = new ByteArrayInputStream(request.getBytes());
 			SOAPMessage soapMessage = MessageFactory.newInstance()
 					.createMessage(null, is);
