@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,6 +18,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import kz.beesoft.wsdl.Case;
+import kz.beesoft.wsdl.Config;
+import kz.beesoft.wsdl.Method;
+import kz.beesoft.wsdl.CaseOutput;
+import kz.beesoft.wsdl.Variable;
 import kz.beesoft.wsdl.WParser;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
@@ -27,11 +33,6 @@ import net.sf.json.xml.XMLSerializer;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
-import com.predic8.wsdl.Message;
-import com.predic8.wsdl.Operation;
-import com.predic8.wsdl.Output;
-import com.predic8.wsdl.Part;
 
 @WebServlet("/soap/*")
 public class SoapControllerServlet extends HttpServlet {
@@ -140,7 +141,8 @@ public class SoapControllerServlet extends HttpServlet {
 							+ File.separator + "config.xml");
 					configFile.createNewFile();
 
-					WParser wp = new WParser(path + File.separator + service+File.separator, service);
+					WParser wp = new WParser(path + File.separator + service
+							+ File.separator, service);
 					String xsdPath = System
 							.getProperty("jboss.server.temp.dir")
 							+ File.separator
@@ -151,6 +153,8 @@ public class SoapControllerServlet extends HttpServlet {
 							+ File.separator + "config.xml";
 					wp.writeXML(configFile, service);
 					wp.writeOp();
+					Config conf=JSONtoXML();
+					wp.writeXML(conf);
 					if (wp.validateXMLSchema(xsdPath, xmlPath)) {
 						System.out.println("Config validation complete");
 					} else {
@@ -310,12 +314,12 @@ public class SoapControllerServlet extends HttpServlet {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						
+
 						JSON json = JSONSerializer.toJSON(xml);
-						String config = JSONtoXML(json);
-						 out.println(config);
-						 out.flush();
-						 out.close();
+						// String config = JSONtoXML(json);
+						// out.println(config);
+						out.flush();
+						out.close();
 					} else {
 						BufferedReader in = new BufferedReader(new FileReader(
 								path + File.separator + parts[4]
@@ -334,14 +338,75 @@ public class SoapControllerServlet extends HttpServlet {
 			}
 		}
 	}
-<<<<<<< HEAD
-	
-=======
-//Kadik eto tvoi method
-	private String JSONtoXML(JSON json) {
-		return "";
+
+	// Kadik eto tvoi method
+	private Config JSONtoXML() {
+
+		File is = new File("C:/bee/wsldparser/source/json.txt");
+		String content = "";
+		Config config = new Config();
+		try {
+			content = new Scanner(is).useDelimiter("\\Z").next();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JSONObject json = (JSONObject) JSONSerializer.toJSON(content);
+		try {
+			PrintWriter out = new PrintWriter(new File(
+					"C:/bee/wsldparser/source/jsonoutput.xml"));
+			String configName = json.getString("name");
+
+			// Configuration parameters
+			config.setName(configName);
+
+			ArrayList<Method> methodList = new ArrayList<Method>();
+
+			List<JSONObject> jsobj = (List) json.getJSONArray("methods");
+			for (JSONObject method1 : jsobj) {
+				Method m = new Method();
+				m.setName(method1.getString("name"));
+				List<JSONObject> variables = (List) method1
+						.getJSONArray("variables");
+				ArrayList<Variable> variablelist = new ArrayList<Variable>();
+				for (JSONObject variable : variables) {
+					Variable var = new Variable();
+					var.setKey(variable.getString("key"));
+					var.setPath(variable.getString("path"));
+					variablelist.add(var);
+				}
+				List<JSONObject> cases = (List) method1.getJSONArray("cases");
+				ArrayList<Case> caselist = new ArrayList<Case>();
+				for (JSONObject cas : cases) {
+					Case c = new Case();
+					c.setTest(cas.getString("test"));
+					JSONObject file = cas.getJSONObject("file");
+					c.setFilepath(file.getString("path"));
+					List<JSONObject> caseout = cas.getJSONArray("outputs");
+					ArrayList<CaseOutput> outputList = new ArrayList<CaseOutput>();
+					for (JSONObject outinfo : caseout) {
+						CaseOutput o = new CaseOutput();
+						o.setPath(outinfo.getString("path"));
+						o.setValue(outinfo.getString("value"));
+						outputList.add(o);
+					}
+					c.setOutputs(outputList);
+					caselist.add(c);
+				}
+				m.setCases(caselist);
+				m.setVariables(variablelist);
+				methodList.add(m);
+			}
+			config.setMethodlist(methodList);
+			
+			out.flush();
+			out.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return config;
 	}
->>>>>>> 51b856cb24ecf1731dc80d752726a427ec5b3b9b
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {

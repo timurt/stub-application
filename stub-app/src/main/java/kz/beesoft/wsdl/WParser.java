@@ -47,7 +47,8 @@ public class WParser {
 		for (PortType pt : defs.getPortTypes()) {
 			for (Operation op : pt.getOperations()) {
 				String mm = op.getName();
-				methods.add(mm);
+				if (!methods.contains(mm))
+					methods.add(mm);
 			}
 		}
 		return methods;
@@ -64,6 +65,48 @@ public class WParser {
 				out.println("		<method name=\"" + name + "\">");
 				out.println("			<variables> </variables>");
 				out.println("			<cases> </cases>");
+				out.println("		</method>");
+			}
+			out.println("	</methods>");
+			out.println("</config>");
+			out.flush();
+			out.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	public void writeXML(Config config) {
+		try {
+			PrintWriter out = new PrintWriter(new File(
+					"C:/bee/wsldparser/source/jsonoutput.xml"));
+			out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+			out.println("<config name=\"" + config.getName() + "\">");
+			out.println("	<methods>");
+			for (Method m : config.getMethodlist()) {
+				out.println("		<method name=\"" + m.getName() + "\">");
+				
+				out.println("			<variables> ");
+				for(Variable v :m.getVariables()){
+					out.println("				<variable key='"+v.getKey()+"' path=\""+v.getPath()+"\"/>");
+					out.println("");
+				}
+				out.println("			</variables>");
+				out.println("			<cases>");
+				for(Case c:m.getCases()){
+					out.println("				<case test=\""+c.getTest()+"\">");
+					out.println("");
+					out.println("						<file path=\""+c.getFilepath()+"\" />");
+					out.println("						<outputs>"); 
+					for(CaseOutput o: c.getOutputs()){
+						out.println("							<output path = \""+o.getPath()+"\" value=\""+o.getValue()+"\"></output>");
+					}
+					out.println("						</outputs>");
+					out.println("				</case>");
+				}
+				out.println("			</cases>");
 				out.println("		</method>");
 			}
 			out.println("	</methods>");
@@ -101,9 +144,9 @@ public class WParser {
 		for (PortType pt : defs.getPortTypes()) {
 			for (Operation op : pt.getOperations()) {
 				getResponse(op);
-				 for (Binding bin : defs.getBindings()) {
-				 getRequests(op, pt, bin);
-				 }
+				for (Binding bin : defs.getBindings()) {
+					getRequests(op, pt, bin);
+				}
 			}
 		}
 	}
@@ -128,9 +171,11 @@ public class WParser {
 		try {
 			out = new PrintWriter(respon);
 			Output output = o.getOutput();
-			Message m = defs.getMessage(output.getMessagePrefixedName().getLocalName());
+			Message m = defs.getMessage(output.getMessagePrefixedName()
+					.getLocalName());
 			for (Part p : m.getParts()) {
-				String s = p.getElement().getRequestTemplate().replace("?XXX?", "?");
+				String s = p.getElement().getRequestTemplate()
+						.replace("?XXX?", "?");
 				String str = s.replace("?", "");
 				String firstpart = "\n <s11:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"> \n <s11:Body>";
 				String secondpart = "\n </s11:Body> \n </s11:Envelope>";
@@ -158,7 +203,8 @@ public class WParser {
 		try {
 			out = new PrintWriter(respon);
 			StringWriter writer = new StringWriter();
-			SOARequestCreator creator = new SOARequestCreator(defs,	new RequestTemplateCreator(), new MarkupBuilder(writer));
+			SOARequestCreator creator = new SOARequestCreator(defs,
+					new RequestTemplateCreator(), new MarkupBuilder(writer));
 			creator.createRequest(pt.getName(), o.getName(), binding.getName());
 			String s = writer.toString().replace("?XXX?", "?");
 			String str = s.toString().replace("?", "");
