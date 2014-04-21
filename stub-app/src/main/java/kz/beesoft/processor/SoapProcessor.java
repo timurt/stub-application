@@ -319,7 +319,6 @@ public class SoapProcessor implements IProcessor {
 						return ns.get(prefix);
 					}
 				}
-				System.out.println(prefix + " asdasd");
 				return XMLConstants.NULL_NS_URI;
 			}
 

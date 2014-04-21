@@ -1,49 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-<<<<<<< HEAD
-<script
-	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.js"></script>
-<script src="js/controllers.js"></script>
-<script src="js/upload.js"></script>
-
-<link
-	href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"
-	rel="stylesheet">
-
-<script
-	src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.6.0.js"></script>
-
-<title>Stub Server</title>
-</head>
-<body>
-	<div ng-app="editApp">
-		<div ng-controller="EditCtrl">
-
-			<h1>Edit Service</h1>
-
-			<div class="container-fluid">
-				<div class="col-md-8"></div>
-				<hr>
-				<div class="col-md-4">
-					<h4>Methods</h4>
-					<input ng-model="query.name">
-
-				</div>
-				<div class="col-md-4">
-					<table>
-						<tr ng-repeat="method in service.methods | filter:query">
-							<td>{{method.name}}</td>
-							<td>
-								<button class="btn" ng-click="open(method)">Edit</button>
-							</td>
-						</tr>
-					</table>
-
-
-				</div>
-				<script type="text/ng-template" id="myModalContent.html">
-=======
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
   <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
@@ -85,7 +42,6 @@
         
 
         <script type="text/ng-template" id="modal.html">
->>>>>>> 83416d47f18042b4a5c097d20f2bf7efd17e2e6e
 
           <div class="modal-header">
             <h3>{{method.name}}</h3>
@@ -247,13 +203,8 @@
             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
           </div>
         </script>
-			</div>
+      </div> 
 
-<<<<<<< HEAD
-		</div>
-	</div>
-	<a href="index.html" class> Cancel </a>
-=======
    </div>
     <a href="index.html" class="btn btn-inverse"> Cancel </a>
   </div>   
@@ -261,6 +212,5 @@
      
       
       </div>
->>>>>>> 83416d47f18042b4a5c097d20f2bf7efd17e2e6e
 </body>
 </html>
