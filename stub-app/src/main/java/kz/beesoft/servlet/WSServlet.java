@@ -26,9 +26,13 @@ public class WSServlet extends HttpServlet {
 	public WSServlet() {
 		super();
 	}
-
+	private static String absPath = System.getProperty("jboss.server.temp.dir")
+			+ File.separator + "soap" + File.separator + "ws";
+	
 	private String process(HttpServletRequest request,
 			HttpServletResponse response) {
+		File folder = new File(absPath);
+		folder.mkdirs();
 		String xml = "";
 		String config = "";
 
@@ -36,9 +40,8 @@ public class WSServlet extends HttpServlet {
 		if (parts.length < 4) {
 			return "Wrong url";
 		} else {
-			String path = System.getProperty("jboss.server.temp.dir")
-					+ File.separator + "soap" + File.separator + parts[2]
-					+ File.separator + parts[3] + File.separator + "config.xml";
+			
+			String path = absPath + File.separator + parts[3] + File.separator + "config.xml";
 			File configFile = new File(path);
 			if (configFile.exists()) {
 				try {
@@ -113,7 +116,7 @@ public class WSServlet extends HttpServlet {
 		} else {
 			return "No XML recieved";
 		}
-		
+
 		return processor.process(config, xml);
 
 	}

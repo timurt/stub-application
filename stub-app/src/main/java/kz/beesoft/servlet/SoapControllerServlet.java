@@ -64,6 +64,8 @@ public class SoapControllerServlet extends HttpServlet {
 
 	private void process(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
+		File folder = new File(path);
+		folder.mkdirs();
 		// Angular JS response headers
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Access-Control-Allow-Headers",
@@ -143,21 +145,21 @@ public class SoapControllerServlet extends HttpServlet {
 
 					WParser wp = new WParser(path + File.separator + service
 							+ File.separator, service);
-					String xsdPath = System
-							.getProperty("jboss.server.temp.dir")
-							+ File.separator
-							+ "soap"
-							+ File.separator
-							+ "configxsd.xsd";
-					String xmlPath = path + File.separator + service
-							+ File.separator + "config.xml";
+					// String xsdPath = System
+					// .getProperty("jboss.server.temp.dir")
+					// + File.separator
+					// + "soap"
+					// + File.separator
+					// + "configxsd.xsd";
+					// String xmlPath = path + File.separator + service
+					// + File.separator + "config.xml";
 					wp.writeXML(configFile, service);
 					wp.writeOp();
-					if (wp.validateXMLSchema(xsdPath, xmlPath)) {
-						System.out.println("Config validation complete");
-					} else {
-						System.out.println("Error");
-					}
+					// if (wp.validateXMLSchema(xsdPath, xmlPath)) {
+					// System.out.println("Config validation complete");
+					// } else {
+					// System.out.println("Error");
+					// }
 					response.sendRedirect(request.getContextPath()
 							+ "/edit.html?service=" + service);
 
@@ -399,15 +401,15 @@ public class SoapControllerServlet extends HttpServlet {
 			config.setMethodlist(methodList);
 			WParser wp = new WParser();
 			wp.writeXML(config, out);
-			String xsdPath = System.getProperty("jboss.server.temp.dir")
-					+ File.separator + "soap" + File.separator
-					+ "configxsd.xsd";
-			String xmlPath = path;
-			if (wp.validateXMLSchema(xsdPath, xmlPath)) {
-				System.out.println("Config validation complete");
-			} else {
-				System.out.println("Error");
-			}
+			// String xsdPath = System.getProperty("jboss.server.temp.dir")
+			// + File.separator + "soap" + File.separator
+			// + "configxsd.xsd";
+			// String xmlPath = path;
+			// if (wp.validateXMLSchema(xsdPath, xmlPath)) {
+			// System.out.println("Config validation complete");
+			// } else {
+			// System.out.println("Error");
+			// }
 			out.flush();
 			out.close();
 		} catch (FileNotFoundException e) {

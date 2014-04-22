@@ -18,7 +18,7 @@ function ListCtrl($scope, $http) {
 		if (confirm("Do you want delete service " + $name)) {
 			$http.get('http://localhost:8080/stub-app/soap/delete/' + $name)
 					.success(function(data) {
-						
+
 					});
 			var oldServices = $scope.services;
 			$scope.services = [];
@@ -446,9 +446,14 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 			outputs : $scope.outputs
 		};
 		if ($scope.response != null) {
-			newCase.file = {path : 'templates/'+method.name+'/responses/'+$scope.response.name};
-	      } else {
-	        newCase.file = {path :'templates/'+method.name +'/response.xml'};
+			newCase.file = {
+				path : 'templates/' + method.name + '/responses/'
+						+ $scope.response.name
+			};
+		} else {
+			newCase.file = {
+				path : 'templates/' + method.name + '/response.xml'
+			};
 		}
 		$scope.response = null;
 		$scope.method.cases.splice(0, 0, newCase);
