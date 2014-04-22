@@ -457,6 +457,7 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 		$scope.output_tree = {};
 		$('#responseFile').val('');
 		$('#casename').val('');
+		$scope.outputs;
 
 	}
 	$scope.createOutput = function(value) {
