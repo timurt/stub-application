@@ -34,10 +34,11 @@ public class WParser {
 	public List<String> requests;
 	WSDLParser parser;
 	Definitions defs;
-	
-	public WParser(){
-		
+
+	public WParser() {
+
 	}
+
 	public WParser(String url, String service) {
 		parser = new WSDLParser();
 		this.url = url;
@@ -50,9 +51,9 @@ public class WParser {
 		for (PortType pt : defs.getPortTypes()) {
 			for (Operation op : pt.getOperations()) {
 				String mm = op.getName();
-				if(!methods.contains(mm))
-				methods.add(mm);
-				}
+				if (!methods.contains(mm))
+					methods.add(mm);
+			}
 		}
 		return methods;
 	}
@@ -80,39 +81,46 @@ public class WParser {
 		}
 
 	}
-	
-	public void writeXML(Config config,PrintWriter out) {
+
+	public void writeXML(Config config, PrintWriter out) {
 		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		out.println("<config name=\"" + config.getName() + "\">");
 		out.println("	<methods>");
 		for (Method m : config.getMethodlist()) {
 			out.println("		<method name=\"" + m.getName() + "\">");
-			if(m.getVariables().size()!=0){
+			if (m.getVariables().size() != 0) {
 
-			out.println("			<variables> ");
-				
-			
-			for(Variable v :m.getVariables()){
-				out.println("				<variable key='"+v.getKey()+"' path=\""+v.getPath()+"\"/>");
-			}
-			out.println("			</variables>");
-			out.println("			<cases>");
-			}else{
+				out.println("			<variables> ");
+
+				for (Variable v : m.getVariables()) {
+					out.println("				<variable key='" + v.getKey()
+							+ "' path=\"" + v.getPath() + "\"/>");
+				}
+				out.println("			</variables>");
+				out.println("			<cases>");
+			} else {
 				out.println("			<variables></variables>");
 			}
-			for(Case c:m.getCases()){
-				out.println("				<case test=\""+c.getTest()+"\">");
-				if(c.getFilepath()!=null){
-				out.println("						<file path=\""+c.getFilepath()+"\" />");
-				}	
-				out.println("						<outputs>"); 
-				for(CaseOutput o: c.getOutputs()){
-					out.println("							<output path = \""+o.getPath()+"\" value=\""+o.getValue()+"\"></output>");
+			if (m.getCases().size() != 0) {
+				for (Case c : m.getCases()) {
+					out.println("				<case test=\"" + c.getTest() + "\">");
+					if (c.getFilepath() != null) {
+						out.println("						<file path=\"" + c.getFilepath()
+								+ "\" />");
+					}
+					out.println("						<outputs>");
+					for (CaseOutput o : c.getOutputs()) {
+						out.println("							<output path = \"" + o.getPath()
+								+ "\" value=\"" + o.getValue() + "\"></output>");
+					}
+					out.println("						</outputs>");
+					out.println("				</case>");
 				}
-				out.println("						</outputs>");
-				out.println("				</case>");
+			} else {
+				out.println("			<case></cases>");
 			}
 			out.println("			</cases>");
+
 			out.println("		</method>");
 		}
 		out.println("	</methods>");
@@ -152,7 +160,8 @@ public class WParser {
 	}
 
 	public void getResponse(Operation o) {
-		String responsespath = url + "templates" + File.separator + o.getName()+File.separator+"responses";
+		String responsespath = url + "templates" + File.separator + o.getName()
+				+ File.separator + "responses";
 		File responsepath = new File(responsespath);
 		if (!responsepath.exists()) {
 			responsepath.mkdirs();
