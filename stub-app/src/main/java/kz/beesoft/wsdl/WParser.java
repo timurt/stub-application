@@ -101,8 +101,9 @@ public class WParser {
 				out.println("			<variables></variables>");
 			}
 			if (m.getCases().size() != 0) {
+				out.println("			<cases>");
 				for (Case c : m.getCases()) {
-					out.println("			<cases>");
+					
 					out.println("				<case test=\"" + c.getTest() + "\">");
 					if (c.getFilepath() != null) {
 						out.println("						<file path=\"" + c.getFilepath()
@@ -113,15 +114,15 @@ public class WParser {
 						for (CaseOutput o : c.getOutputs()) {
 							out.println("							<output path = \""
 									+ o.getPath() + "\" value=\""
-									+ o.getValue() + "\"></output>");
+									+ o.getValue() + "\"/>");
 						}
 						out.println("						</outputs>");
 					} else {
 						out.println("						<outputs></outputs>");
 					}
 					out.println("				</case>");
-					out.println("			</cases>");
 				}
+				out.println("			</cases>");
 			} else {
 				out.println("			<cases></cases>");
 			}
