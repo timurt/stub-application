@@ -87,13 +87,19 @@ public class WParser {
 		out.println("	<methods>");
 		for (Method m : config.getMethodlist()) {
 			out.println("		<method name=\"" + m.getName() + "\">");
+			if(m.getVariables().size()!=0){
+
 			out.println("			<variables> ");
+				
+			
 			for(Variable v :m.getVariables()){
 				out.println("				<variable key='"+v.getKey()+"' path=\""+v.getPath()+"\"/>");
 			}
 			out.println("			</variables>");
 			out.println("			<cases>");
-			
+			}else{
+				out.println("			<variables></variables>");
+			}
 			for(Case c:m.getCases()){
 				out.println("				<case test=\""+c.getTest()+"\">");
 				if(c.getFilepath()!=null){
