@@ -10,14 +10,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-
-import org.xml.sax.SAXException;
-
 import com.predic8.wsdl.Binding;
 import com.predic8.wsdl.Definitions;
 import com.predic8.wsdl.Message;
@@ -103,7 +95,7 @@ public class WParser {
 			if (m.getCases().size() != 0) {
 				out.println("			<cases>");
 				for (Case c : m.getCases()) {
-					
+
 					out.println("				<case test=\"" + c.getTest() + "\">");
 					if (c.getFilepath() != null) {
 						out.println("						<file path=\"" + c.getFilepath()
@@ -134,25 +126,25 @@ public class WParser {
 
 	}
 
-	public boolean validateXMLSchema(String xsdPath, String xmlPath) {
-
-		try {
-			SchemaFactory factory = SchemaFactory
-					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			try {
-				Schema schema = factory.newSchema(new File(xsdPath));
-				Validator validator = schema.newValidator();
-				validator.validate(new StreamSource(new File(xmlPath)));
-			} catch (SAXException e) {
-				e.printStackTrace();
-				return false;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
+	// public boolean validateXMLSchema(String xsdPath, String xmlPath) {
+	//
+	// try {
+	// SchemaFactory factory = SchemaFactory
+	// .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+	// try {
+	// Schema schema = factory.newSchema(new File(xsdPath));
+	// Validator validator = schema.newValidator();
+	// validator.validate(new StreamSource(new File(xmlPath)));
+	// } catch (SAXException e) {
+	// e.printStackTrace();
+	// return false;
+	// }
+	// } catch (IOException e) {
+	// e.printStackTrace();
+	// return false;
+	// }
+	// return true;
+	// }
 
 	public void writeOp() {
 		for (PortType pt : defs.getPortTypes()) {
