@@ -386,17 +386,13 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 		var str = "";
 		var split = path.split("/");
 		for (var i = 1; i < split.length; i++) {
-			if (split[i].indexOf("Body") !== -1
-					|| split[i].indexOf("Envelope") !== -1) {
-				str += "/" + split[i];
-				continue;
-			} else {
+			if (split[i].indexOf(":") !== -1) {
 				var temp = split[i].split(":")[1];
-
-				str += "/*[local-name() = '" + temp + "']";
+				str += "/" + temp;
+			} else {
+				str += "/" + split[i];
 			}
 		}
-
 		return str;
 	}
 	$scope.viewVariable = function(key) {
@@ -450,10 +446,9 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 			outputs : $scope.outputs
 		};
 		if ($scope.response != null) {
-			newCase.file = 'templates/' + method.name + '/responses/'
-					+ $scope.response.name;
-		} else {
-			newCase.file = 'templates/' + method.name + '/response.xml';
+			newCase.file = {path : 'templates/'+method.name+'/responses/'+$scope.response.name};
+	      } else {
+	        newCase.file = {path :'templates/'+method.name +'/response.xml'};
 		}
 		$scope.response = null;
 		$scope.method.cases.splice(0, 0, newCase);

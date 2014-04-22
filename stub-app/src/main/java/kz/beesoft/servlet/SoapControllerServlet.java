@@ -314,6 +314,8 @@ public class SoapControllerServlet extends HttpServlet {
 							e.printStackTrace();
 						}
 						JSON json = JSONSerializer.toJSON(xml);
+
+						
 						JSONtoXML(json, out);
 						out.flush();
 						out.close();
