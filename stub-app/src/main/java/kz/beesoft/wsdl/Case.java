@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Case {
 	String test;
-	String filepath;
+	String filepath=null;
 	ArrayList<CaseOutput> outputs;
 	
 	public Case(){

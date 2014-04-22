@@ -83,10 +83,10 @@ public class WParser {
 	
 	public void writeXML(Config config,PrintWriter out) {
 		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		out.println("<config name=\"" + config.getName() + "\">");
+		out.println("<config name=\'" + config.getName() + "\'>");
 		out.println("	<methods>");
 		for (Method m : config.getMethodlist()) {
-			out.println("		<method name=\"" + m.getName() + "\">");
+			out.println("		<method name=\'" + m.getName() + "\'>");
 			out.println("			<variables> ");
 			for(Variable v :m.getVariables()){
 				out.println("				<variable key='"+v.getKey()+"' path=\""+v.getPath()+"\"/>");
@@ -94,14 +94,12 @@ public class WParser {
 			}
 			out.println("			</variables>");
 			out.println("			<cases>");
-			if(m.getCases().size()==0){
-				out.println("0				<outputs>"); 
-				out.println("				</outputs>"); 
-			}
+			
 			for(Case c:m.getCases()){
 				out.println("				<case test=\""+c.getTest()+"\">");
-				out.println("");
+				if(c.getFilepath()!=null){
 				out.println("						<file path=\""+c.getFilepath()+"\" />");
+				}	
 				out.println("						<outputs>"); 
 				for(CaseOutput o: c.getOutputs()){
 					out.println("							<output path = \""+o.getPath()+"\" value=\""+o.getValue()+"\"></output>");
