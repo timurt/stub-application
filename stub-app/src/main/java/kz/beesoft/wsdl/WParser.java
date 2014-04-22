@@ -66,8 +66,8 @@ public class WParser {
 			out.println("	<methods>");
 			for (String name : methodsList) {
 				out.println("		<method name=\"" + name + "\">");
-				out.println("			<variables> </variables>");
-				out.println("			<cases> </cases>");
+				out.println("			<variables></variables>");
+				out.println("			<cases></cases>");
 				out.println("		</method>");
 			}
 			out.println("	</methods>");
