@@ -31,6 +31,7 @@ function ListCtrl($scope, $http) {
 };
 
 function EditCtrl($scope, $http, $location, $modal) {
+
 	$scope.name = $location.search()['service'];
 	$http.get('http://localhost:8080/stub-app/soap/service/' + $scope.name, {
 		cache : false
@@ -239,6 +240,12 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 	$scope.putput_tree = {};
 
 	$scope.method = method;
+	if (method.variables == '' || method.variables == ' ') {
+		$scope.method.variables = [];
+	}
+	if (method.cases == '' || method.cases == ' ') {
+		$scope.method.cases = [];
+	}
 	$scope.outputs = [];
 	$scope.requestTemplate = "";
 	$scope.responseTemplate = "";
@@ -261,7 +268,11 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 					+ '/gresponse/' + method.name, {
 				cache : false
 			}).success(function(data) {
+		if ($scope.response != null) {
+			$scope.output_data = xmlToJson(data);
 
+			$scope.output_tree = {};
+		}
 		$scope.responseTemplate = data;
 		$scope.output_data = xmlToJson($scope.responseTemplate);
 
@@ -304,6 +315,11 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 								});
 
 							} else if (type == 'responseTemplate') {
+								if ($scope.response != null) {
+									$scope.output_data = xmlToJson(result);
+
+									$scope.output_tree = {};
+								}
 								$scope.responseTemplate = result;
 								$scope.output_data = xmlToJson($scope.responseTemplate);
 
@@ -428,7 +444,6 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 
 	$scope.createCase = function(test) {
 
-		$('#casename').val('');
 		newCase = {
 			test : test,
 
@@ -440,8 +455,13 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 		} else {
 			newCase.file = 'templates/' + method.name + '/response.xml';
 		}
-
+		$scope.response = null;
 		$scope.method.cases.splice(0, 0, newCase);
+		$scope.output_data = xmlToJson($scope.responseTemplate);
+
+		$scope.output_tree = {};
+		$('#responseFile').val('');
+		$('#casename').val('');
 
 	}
 	$scope.createOutput = function(value) {

@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -55,15 +56,25 @@ public class SoapProcessor implements IProcessor {
 		domFactory.setNamespaceAware(true);
 		DocumentBuilder builder = domFactory.newDocumentBuilder();
 		Document doc = builder.parse(new InputSource(new StringReader(mess)));
-		
+		path = ignore(path);		
+		// System.out.println(path);
 		XPathExpression expr = xpath.compile(path);
-
+		
 		Node node = (Node) expr.evaluate(doc, XPathConstants.NODE);
 
 		return node.getTextContent();
 
 	}
-
+	
+	public static String ignore(String path){
+		String st = "";
+		String split[] = path.split("/");
+		for (int i = 1; i < split.length; i++) {
+			st += "/*[local-name() = '" + split[i]+"']";
+		}
+		return st;
+	}
+	
 	public static String parseConfig(String mess, String soap, String path,
 			XPath xpath) {
 		String s = "";
@@ -138,6 +149,7 @@ public class SoapProcessor implements IProcessor {
 			if (n.getChildNodes().item(i).getNodeName().equals("case")) {
 				if (compute(final_data, n.getChildNodes().item(i)
 						.getAttributes().item(0).getTextContent())) {
+
 					return createResponse(mess, xpath, n.getChildNodes()
 							.item(i));
 				}
@@ -161,7 +173,6 @@ public class SoapProcessor implements IProcessor {
 				}
 			}
 		}
-		// System.out.println(s);
 		return Boolean.parseBoolean(engine.eval(s).toString());
 	}
 
@@ -187,7 +198,11 @@ public class SoapProcessor implements IProcessor {
 		 */
 		// System.out.println(config);
 		// System.out.println(request);
-		try {
+		try {/*
+			 * PrintWriter out = new PrintWriter(new File(
+			 * "C:/jboss/jboss-as-7.1.0.Final/standalone/tmp/soap/ws/terminal/templates/ConversionRate/output.txt"
+			 * )); out.println(request); out.close();
+			 */
 			InputStream is = new ByteArrayInputStream(request.getBytes());
 			SOAPMessage soapMessage = MessageFactory.newInstance()
 					.createMessage(null, is);
@@ -197,12 +212,8 @@ public class SoapProcessor implements IProcessor {
 			String method = "";
 			for (int i = 0; i < body.getChildNodes().getLength(); i++) {
 				if (body.getChildNodes().item(i).hasChildNodes()) {
-					method = body.getChildNodes().item(i).getNodeName();
-				}
-			}
-			for (int i = 0; i < body.getChildNodes().getLength(); i++) {
-				if (body.getChildNodes().item(i).hasChildNodes()) {
-					method = body.getChildNodes().item(i).getNodeName();
+					method = body.getChildNodes().item(i).getNodeName()
+							.split(":")[1];
 				}
 			}
 			String s = "";
@@ -246,11 +257,11 @@ public class SoapProcessor implements IProcessor {
 			});
 
 			path = parseConfig(config, request, path, xpath);
-
 			return getCondition(config, xpath, method);
+
 		} catch (Exception e) {
-			e.printStackTrace();
-			return "Error";
+			String s = e.getMessage();
+			return s;
 		}
 	}
 
@@ -351,7 +362,6 @@ public class SoapProcessor implements IProcessor {
 			XPathExpression expr = xpath.compile(path);
 			Node nd = (Node) expr.evaluate(doc, XPathConstants.NODE);
 
-			// System.out.println(nd.getNodeName());
 			nd.setTextContent(value);
 		}
 		return nodeToString(doc.getFirstChild());
