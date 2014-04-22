@@ -3,7 +3,6 @@ package kz.beesoft.processor;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -56,9 +55,7 @@ public class SoapProcessor implements IProcessor {
 		domFactory.setNamespaceAware(true);
 		DocumentBuilder builder = domFactory.newDocumentBuilder();
 		Document doc = builder.parse(new InputSource(new StringReader(mess)));
-		System.out.println(mess);
-		System.out.println(path);
-		// Create XPathFactory object
+		
 		XPathExpression expr = xpath.compile(path);
 
 		Node node = (Node) expr.evaluate(doc, XPathConstants.NODE);
@@ -72,9 +69,10 @@ public class SoapProcessor implements IProcessor {
 		String s = "";
 
 		try {
-			System.out.println();
+
 			Node n = (Node) xpath.compile(path).evaluate(
 					loadXMLFromString(mess), XPathConstants.NODE);
+
 			for (int i = 0; i < n.getChildNodes().getLength(); i++) {
 				final_data.put(
 						(n.getChildNodes().item(i).getAttributes().item(0)
@@ -202,6 +200,11 @@ public class SoapProcessor implements IProcessor {
 					method = body.getChildNodes().item(i).getNodeName();
 				}
 			}
+			for (int i = 0; i < body.getChildNodes().getLength(); i++) {
+				if (body.getChildNodes().item(i).hasChildNodes()) {
+					method = body.getChildNodes().item(i).getNodeName();
+				}
+			}
 			String s = "";
 			for (int i = 0; i < nl.getLength(); i++) {
 				s += nodeToString(nl.item(i));
@@ -311,7 +314,6 @@ public class SoapProcessor implements IProcessor {
 
 		xpath.setNamespaceContext(new NamespaceContext() {
 			public String getNamespaceURI(String prefix) {
-				System.out.println(prefix + " asdasd");
 				for (int i = 0; i < ns.size(); i++) {
 					if (ns.containsKey(prefix)) {
 						return ns.get(prefix);
@@ -347,8 +349,9 @@ public class SoapProcessor implements IProcessor {
 			String value = node.getChildNodes().item(1).getChildNodes().item(i)
 					.getAttributes().item(1).getTextContent();
 			XPathExpression expr = xpath.compile(path);
-
 			Node nd = (Node) expr.evaluate(doc, XPathConstants.NODE);
+
+			// System.out.println(nd.getNodeName());
 			nd.setTextContent(value);
 		}
 		return nodeToString(doc.getFirstChild());

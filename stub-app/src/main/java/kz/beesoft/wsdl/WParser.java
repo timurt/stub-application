@@ -34,7 +34,10 @@ public class WParser {
 	public List<String> requests;
 	WSDLParser parser;
 	Definitions defs;
-
+	
+	public WParser(){
+		
+	}
 	public WParser(String url, String service) {
 		parser = new WSDLParser();
 		this.url = url;
@@ -78,45 +81,35 @@ public class WParser {
 
 	}
 	
-	public void writeXML(Config config) {
-		try {
-			PrintWriter out = new PrintWriter(new File(
-					"C:/bee/wsldparser/source/jsonoutput.xml"));
-			out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-			out.println("<config name=\"" + config.getName() + "\">");
-			out.println("	<methods>");
-			for (Method m : config.getMethodlist()) {
-				out.println("		<method name=\"" + m.getName() + "\">");
-				
-				out.println("			<variables> ");
-				for(Variable v :m.getVariables()){
-					out.println("				<variable key='"+v.getKey()+"' path=\""+v.getPath()+"\"/>");
-					out.println("");
-				}
-				out.println("			</variables>");
-				out.println("			<cases>");
-				for(Case c:m.getCases()){
-					out.println("				<case test=\""+c.getTest()+"\">");
-					out.println("");
-					out.println("						<file path=\""+c.getFilepath()+"\" />");
-					out.println("						<outputs>"); 
-					for(CaseOutput o: c.getOutputs()){
-						out.println("							<output path = \""+o.getPath()+"\" value=\""+o.getValue()+"\"></output>");
-					}
-					out.println("						</outputs>");
-					out.println("				</case>");
-				}
-				out.println("			</cases>");
-				out.println("		</method>");
+	public void writeXML(Config config,PrintWriter out) {
+		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		out.println("<config name=\"" + config.getName() + "\">");
+		out.println("	<methods>");
+		for (Method m : config.getMethodlist()) {
+			out.println("		<method name=\"" + m.getName() + "\">");
+			out.println("			<variables> ");
+			for(Variable v :m.getVariables()){
+				out.println("				<variable key='"+v.getKey()+"' path=\""+v.getPath()+"\"/>");
+				out.println("");
 			}
-			out.println("	</methods>");
-			out.println("</config>");
-			out.flush();
-			out.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			out.println("			</variables>");
+			out.println("			<cases>");
+			for(Case c:m.getCases()){
+				out.println("				<case test=\""+c.getTest()+"\">");
+				out.println("");
+				out.println("						<file path=\""+c.getFilepath()+"\" />");
+				out.println("						<outputs>"); 
+				for(CaseOutput o: c.getOutputs()){
+					out.println("							<output path = \""+o.getPath()+"\" value=\""+o.getValue()+"\"></output>");
+				}
+				out.println("						</outputs>");
+				out.println("				</case>");
+			}
+			out.println("			</cases>");
+			out.println("		</method>");
 		}
+		out.println("	</methods>");
+		out.println("</config>");
 
 	}
 
@@ -152,11 +145,15 @@ public class WParser {
 	}
 
 	public void getResponse(Operation o) {
+		String responsespath = url + "templates" + File.separator + o.getName()+File.separator+" responses";
+		File responsepath = new File(responsespath);
+		if (!responsepath.exists()) {
+			responsepath.mkdirs();
+		}
 		String path = url + "templates" + File.separator + o.getName();
 		File responseFile = new File(path);
 		if (!responseFile.exists()) {
 			responseFile.mkdirs();
-		} else {
 		}
 		File respon = new File(path + File.separator + "response.xml");
 		if (respon.exists()) {

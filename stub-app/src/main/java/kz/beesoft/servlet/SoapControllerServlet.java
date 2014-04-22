@@ -98,6 +98,7 @@ public class SoapControllerServlet extends HttpServlet {
 							services.add(service);
 						}
 					}
+				} else {
 				}
 				if (services != null) {
 					result = services.toString();
@@ -153,8 +154,6 @@ public class SoapControllerServlet extends HttpServlet {
 							+ File.separator + "config.xml";
 					wp.writeXML(configFile, service);
 					wp.writeOp();
-					Config conf=JSONtoXML();
-					wp.writeXML(conf);
 					if (wp.validateXMLSchema(xsdPath, xmlPath)) {
 						System.out.println("Config validation complete");
 					} else {
@@ -316,10 +315,12 @@ public class SoapControllerServlet extends HttpServlet {
 						}
 
 						JSON json = JSONSerializer.toJSON(xml);
-						// String config = JSONtoXML(json);
-						// out.println(config);
+						System.out.println(json);
+						JSONtoXML(json, out);
+						out.println(json);
 						out.flush();
 						out.close();
+
 					} else {
 						BufferedReader in = new BufferedReader(new FileReader(
 								path + File.separator + parts[4]
@@ -337,75 +338,75 @@ public class SoapControllerServlet extends HttpServlet {
 				}
 			}
 		}
+		PrintWriter out = response.getWriter();
+		out.println(result);
+		out.flush();
+		out.close();
 	}
 
-	// Kadik eto tvoi method
-	private Config JSONtoXML() {
+	private void JSONtoXML(JSON js, PrintWriter out) {
 
-		File is = new File("C:/bee/wsldparser/source/json.txt");
-		String content = "";
 		Config config = new Config();
-		try {
-			content = new Scanner(is).useDelimiter("\\Z").next();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		JSONObject json = (JSONObject) JSONSerializer.toJSON(content);
-		try {
-			PrintWriter out = new PrintWriter(new File(
-					"C:/bee/wsldparser/source/jsonoutput.xml"));
-			String configName = json.getString("name");
 
-			// Configuration parameters
-			config.setName(configName);
+		JSONObject json = (JSONObject) JSONSerializer.toJSON(js);
+		String configName = json.getString("name");
 
-			ArrayList<Method> methodList = new ArrayList<Method>();
+		// Configuration parameters
+		config.setName(configName);
 
+		ArrayList<Method> methodList = new ArrayList<Method>();
+		ArrayList<Variable> variablelist = new ArrayList<Variable>();
+		ArrayList<Case> caselist = new ArrayList<Case>();
+
+		if (json.getJSONArray("methods").isExpandElements()) {
 			List<JSONObject> jsobj = (List) json.getJSONArray("methods");
 			for (JSONObject method1 : jsobj) {
 				Method m = new Method();
 				m.setName(method1.getString("name"));
-				List<JSONObject> variables = (List) method1
-						.getJSONArray("variables");
-				ArrayList<Variable> variablelist = new ArrayList<Variable>();
-				for (JSONObject variable : variables) {
+				if (method1.getJSONArray("variables").isExpandElements()) {
+					List<JSONObject> variables = (List) method1
+							.getJSONArray("variables");
+					for (JSONObject variable : variables) {
+						Variable var = new Variable();
+						var.setKey(variable.getString("key"));
+						var.setPath(variable.getString("path"));
+						variablelist.add(var);
+					}
+				}else{
 					Variable var = new Variable();
-					var.setKey(variable.getString("key"));
-					var.setPath(variable.getString("path"));
 					variablelist.add(var);
 				}
-				List<JSONObject> cases = (List) method1.getJSONArray("cases");
-				ArrayList<Case> caselist = new ArrayList<Case>();
-				for (JSONObject cas : cases) {
-					Case c = new Case();
-					c.setTest(cas.getString("test"));
-					JSONObject file = cas.getJSONObject("file");
-					c.setFilepath(file.getString("path"));
-					List<JSONObject> caseout = cas.getJSONArray("outputs");
-					ArrayList<CaseOutput> outputList = new ArrayList<CaseOutput>();
-					for (JSONObject outinfo : caseout) {
-						CaseOutput o = new CaseOutput();
-						o.setPath(outinfo.getString("path"));
-						o.setValue(outinfo.getString("value"));
-						outputList.add(o);
+				if (method1.getJSONArray("cases").isExpandElements()) {
+					List<JSONObject> cases = (List) method1
+							.getJSONArray("cases");
+					for (JSONObject cas : cases) {
+						Case c = new Case();
+						c.setTest(cas.getString("test"));
+						JSONObject file = cas.getJSONObject("file");
+						c.setFilepath(file.getString("path"));
+						ArrayList<CaseOutput> outputList = new ArrayList<CaseOutput>();
+						if (cas.getJSONArray("outputs").isExpandElements()) {
+							List<JSONObject> caseout = cas
+									.getJSONArray("outputs");
+							for (JSONObject outinfo : caseout) {
+								CaseOutput o = new CaseOutput();
+								o.setPath(outinfo.getString("path"));
+								o.setValue(outinfo.getString("value"));
+								outputList.add(o);
+							}
+						}
+						c.setOutputs(outputList);
+						caselist.add(c);
 					}
-					c.setOutputs(outputList);
-					caselist.add(c);
 				}
 				m.setCases(caselist);
 				m.setVariables(variablelist);
 				methodList.add(m);
 			}
-			config.setMethodlist(methodList);
-			
-			out.flush();
-			out.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		return config;
+		config.setMethodlist(methodList);
+		WParser wp = new WParser();
+		wp.writeXML(config, out);
 	}
 
 	protected void doGet(HttpServletRequest request,

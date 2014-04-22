@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 public class Method {
 	String name;
-	ArrayList<Variable> variables= new ArrayList<Variable>();
-	ArrayList<Case> cases= new ArrayList<Case>();
+	ArrayList<Variable> variables;
+	ArrayList<Case> cases;
 	
 	public Method(){
+		variables= new ArrayList<Variable>();
+		cases= new ArrayList<Case>();
 	}
 	public String getName() {
 		return name;

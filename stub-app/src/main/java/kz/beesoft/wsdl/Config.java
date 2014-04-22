@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 public class Config {
 	String name;
-	ArrayList<Method> methodlist = new ArrayList<Method>();
+	ArrayList<Method> methodlist;
 
 	public Config() {
+		methodlist = new ArrayList<Method>();
 	}
 
 	public String getName() {

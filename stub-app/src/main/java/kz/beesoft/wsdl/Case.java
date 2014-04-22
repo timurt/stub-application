@@ -5,9 +5,10 @@ import java.util.ArrayList;
 public class Case {
 	String test;
 	String filepath;
-	ArrayList<CaseOutput> outputs = new ArrayList<CaseOutput>();
+	ArrayList<CaseOutput> outputs;
 	
 	public Case(){
+		outputs = new ArrayList<CaseOutput>();
 	}
 	public String getTest() {
 		return test;
