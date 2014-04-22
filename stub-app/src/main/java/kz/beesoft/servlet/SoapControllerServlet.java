@@ -348,6 +348,7 @@ public class SoapControllerServlet extends HttpServlet {
 		Config config = new Config();
 
 		JSONObject json = (JSONObject) JSONSerializer.toJSON(js);
+		out.println(json);
 		String configName = json.getString("name");
 
 		// Configuration parameters
@@ -377,7 +378,8 @@ public class SoapControllerServlet extends HttpServlet {
 					for (JSONObject cas : cases) {
 						Case c = new Case();
 						c.setTest(cas.getString("test"));
-						c.setFilepath(cas.getString("file"));
+						JSONObject file = cas.getJSONObject("file");
+						c.setFilepath(file.getString("path"));
 						ArrayList<CaseOutput> outputList = new ArrayList<CaseOutput>();
 						List<JSONObject> caseout = cas.getJSONArray("outputs");
 						for (JSONObject outinfo : caseout) {
