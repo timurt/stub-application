@@ -313,10 +313,10 @@ public class SoapControllerServlet extends HttpServlet {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						xml = new Scanner(new File("C:/bee/wsldparser/source/json.txt")).useDelimiter("\\Z").next();
+//						xml = new Scanner(new File("C:/bee/wsldparser/source/json.txt")).useDelimiter("\\Z").next();
 						JSON json = JSONSerializer.toJSON(xml);
-						JSONtoXML(json, out);
 						out.println(json);
+						JSONtoXML(json, out);
 						out.flush();
 						out.close();
 
@@ -348,6 +348,7 @@ public class SoapControllerServlet extends HttpServlet {
 		Config config = new Config();
 
 		JSONObject json = (JSONObject) JSONSerializer.toJSON(js);
+		out.println(json);
 		String configName = json.getString("name");
 
 		// Configuration parameters
@@ -377,10 +378,10 @@ public class SoapControllerServlet extends HttpServlet {
 					for (JSONObject cas : cases) {
 						Case c = new Case();
 						c.setTest(cas.getString("test"));
-						if (cas.containsValue("file")) {
-							JSONObject file = cas.getJSONObject("file");
-							c.setFilepath(file.getString("path"));
-						}
+//						if (cas.containsValue("file")) {
+//						JSONObject file = cas.getJSONObject("file");
+						c.setFilepath(cas.getString("file"));
+//						}
 						ArrayList<CaseOutput> outputList = new ArrayList<CaseOutput>();
 						List<JSONObject> caseout = cas.getJSONArray("outputs");
 						for (JSONObject outinfo : caseout) {
