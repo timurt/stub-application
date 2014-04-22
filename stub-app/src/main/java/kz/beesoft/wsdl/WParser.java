@@ -94,6 +94,10 @@ public class WParser {
 			}
 			out.println("			</variables>");
 			out.println("			<cases>");
+			if(m.getCases().size()==0){
+				out.println("0				<outputs>"); 
+				out.println("				</outputs>"); 
+			}
 			for(Case c:m.getCases()){
 				out.println("				<case test=\""+c.getTest()+"\">");
 				out.println("");
@@ -145,7 +149,7 @@ public class WParser {
 	}
 
 	public void getResponse(Operation o) {
-		String responsespath = url + "templates" + File.separator + o.getName()+File.separator+" responses";
+		String responsespath = url + "templates" + File.separator + o.getName()+File.separator+"responses";
 		File responsepath = new File(responsespath);
 		if (!responsepath.exists()) {
 			responsepath.mkdirs();
@@ -174,7 +178,7 @@ public class WParser {
 				String s = p.getElement().getRequestTemplate()
 						.replace("?XXX?", "?");
 				String str = s.replace("?", "");
-				String firstpart = "\n <s11:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"> \n <s11:Body>";
+				String firstpart = "\n <s11:Envelope xmlns:s11=\"http://schemas.xmlsoap.org/soap/envelope/\"> \n <s11:Body>";
 				String secondpart = "\n </s11:Body> \n </s11:Envelope>";
 				String all = firstpart + " " + str + " " + secondpart;
 				out.println(all);
