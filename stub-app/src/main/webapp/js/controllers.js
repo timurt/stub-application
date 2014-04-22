@@ -18,7 +18,7 @@ function ListCtrl($scope, $http) {
 		if (confirm("Do you want delete service " + $name)) {
 			$http.get('http://localhost:8080/stub-app/soap/delete/' + $name)
 					.success(function(data) {
-
+						
 					});
 			var oldServices = $scope.services;
 			$scope.services = [];
