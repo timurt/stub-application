@@ -145,7 +145,7 @@ public class WParser {
 	}
 
 	public void getResponse(Operation o) {
-		String responsespath = url + "templates" + File.separator + o.getName()+File.separator+" responses";
+		String responsespath = url + "templates" + File.separator + o.getName()+File.separator+"responses";
 		File responsepath = new File(responsespath);
 		if (!responsepath.exists()) {
 			responsepath.mkdirs();
