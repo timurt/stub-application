@@ -370,17 +370,13 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 		var str = "";
 		var split = path.split("/");
 		for (var i = 1; i < split.length; i++) {
-			if (split[i].indexOf("Body") !== -1
-					|| split[i].indexOf("Envelope") !== -1) {
-				str += "/" + split[i];
-				continue;
-			} else {
+			if (split[i].indexOf(":") !== -1) {
 				var temp = split[i].split(":")[1];
-
-				str += "/*[local-name() = '" + temp + "']";
+				str += "/" + temp;
+			} else {
+				str += "/" + split[i];
 			}
 		}
-
 		return str;
 	}
 	$scope.viewVariable = function(key) {

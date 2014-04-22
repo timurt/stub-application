@@ -56,25 +56,25 @@ public class SoapProcessor implements IProcessor {
 		domFactory.setNamespaceAware(true);
 		DocumentBuilder builder = domFactory.newDocumentBuilder();
 		Document doc = builder.parse(new InputSource(new StringReader(mess)));
-		path = ignore(path);		
+		path = ignore(path);
 		// System.out.println(path);
 		XPathExpression expr = xpath.compile(path);
-		
+
 		Node node = (Node) expr.evaluate(doc, XPathConstants.NODE);
 
 		return node.getTextContent();
 
 	}
-	
-	public static String ignore(String path){
+
+	public static String ignore(String path) {
 		String st = "";
 		String split[] = path.split("/");
 		for (int i = 1; i < split.length; i++) {
-			st += "/*[local-name() = '" + split[i]+"']";
+			st += "/*[local-name() = '" + split[i] + "']";
 		}
 		return st;
 	}
-	
+
 	public static String parseConfig(String mess, String soap, String path,
 			XPath xpath) {
 		String s = "";
@@ -355,8 +355,8 @@ public class SoapProcessor implements IProcessor {
 		for (int i = 0; i < node.getChildNodes().item(1).getChildNodes()
 				.getLength(); i++) {
 
-			String path = node.getChildNodes().item(1).getChildNodes().item(i)
-					.getAttributes().item(0).getTextContent();
+			String path = ignore(node.getChildNodes().item(1).getChildNodes()
+					.item(i).getAttributes().item(0).getTextContent());
 			String value = node.getChildNodes().item(1).getChildNodes().item(i)
 					.getAttributes().item(1).getTextContent();
 			XPathExpression expr = xpath.compile(path);
