@@ -97,29 +97,34 @@ public class WParser {
 							+ "' path=\"" + v.getPath() + "\"/>");
 				}
 				out.println("			</variables>");
-				out.println("			<cases>");
 			} else {
 				out.println("			<variables></variables>");
 			}
 			if (m.getCases().size() != 0) {
 				for (Case c : m.getCases()) {
+					out.println("			<cases>");
 					out.println("				<case test=\"" + c.getTest() + "\">");
 					if (c.getFilepath() != null) {
 						out.println("						<file path=\"" + c.getFilepath()
 								+ "\" />");
 					}
-					out.println("						<outputs>");
-					for (CaseOutput o : c.getOutputs()) {
-						out.println("							<output path = \"" + o.getPath()
-								+ "\" value=\"" + o.getValue() + "\"></output>");
+					if (c.getOutputs().size() != 0) {
+						out.println("						<outputs>");
+						for (CaseOutput o : c.getOutputs()) {
+							out.println("							<output path = \""
+									+ o.getPath() + "\" value=\""
+									+ o.getValue() + "\"></output>");
+						}
+						out.println("						</outputs>");
+					} else {
+						out.println("						<outputs></outputs>");
 					}
-					out.println("						</outputs>");
 					out.println("				</case>");
+					out.println("			</cases>");
 				}
 			} else {
-				out.println("			<case></cases>");
+				out.println("			<cases></cases>");
 			}
-			out.println("			</cases>");
 
 			out.println("		</method>");
 		}
