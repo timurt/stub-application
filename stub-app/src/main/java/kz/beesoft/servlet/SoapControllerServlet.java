@@ -293,8 +293,8 @@ public class SoapControllerServlet extends HttpServlet {
 						out.flush();
 						out.close();
 					} else if (parts.length >= 6 && parts[5].equals("save")) {
-						PrintWriter out = new PrintWriter(path + File.separator
-								+ parts[4] + File.separator + "config2.xml");
+						String out = path + File.separator + parts[4]
+								+ File.separator + "config.xml";
 
 						String xml = "";
 						byte[] xmlData = new byte[request.getContentLength()];
@@ -315,8 +315,6 @@ public class SoapControllerServlet extends HttpServlet {
 						}
 						JSON json = JSONSerializer.toJSON(xml);
 						JSONtoXML(json, out);
-						out.flush();
-						out.close();
 
 					} else {
 						BufferedReader in = new BufferedReader(new FileReader(
@@ -341,62 +339,82 @@ public class SoapControllerServlet extends HttpServlet {
 		out.close();
 	}
 
-	private void JSONtoXML(JSON js, PrintWriter out) {
+	private void JSONtoXML(JSON js, String path) {
 
-		Config config = new Config();
+		PrintWriter out;
+		try {
+			out = new PrintWriter(path);
 
-		JSONObject json = (JSONObject) JSONSerializer.toJSON(js);
-		String configName = json.getString("name");
+			Config config = new Config();
 
-		// Configuration parameters
-		config.setName(configName);
+			JSONObject json = (JSONObject) JSONSerializer.toJSON(js);
+			String configName = json.getString("name");
 
-		ArrayList<Method> methodList = new ArrayList<Method>();
-		if (!json.getJSONArray("methods").isEmpty()) {
-			List<JSONObject> jsobj = (List) json.getJSONArray("methods");
-			for (JSONObject method1 : jsobj) {
-				Method m = new Method();
-				m.setName(method1.getString("name"));
-				ArrayList<Variable> variablelist = new ArrayList<Variable>();
-				ArrayList<Case> caselist = new ArrayList<Case>();
-				if (!method1.getString("variables").equals(" ")) {
-					List<JSONObject> variables = (List) method1
-							.getJSONArray("variables");
-					for (JSONObject variable : variables) {
-						Variable var = new Variable();
-						var.setKey(variable.getString("key"));
-						var.setPath(variable.getString("path"));
-						variablelist.add(var);
-					}
-				}
-				if (!method1.getString("cases").equals(" ")) {
-					List<JSONObject> cases = (List) method1
-							.getJSONArray("cases");
-					for (JSONObject cas : cases) {
-						Case c = new Case();
-						c.setTest(cas.getString("test"));
-						JSONObject file = cas.getJSONObject("file");
-						c.setFilepath(file.getString("path"));
-						ArrayList<CaseOutput> outputList = new ArrayList<CaseOutput>();
-						List<JSONObject> caseout = cas.getJSONArray("outputs");
-						for (JSONObject outinfo : caseout) {
-							CaseOutput o = new CaseOutput();
-							o.setPath(outinfo.getString("path"));
-							o.setValue(outinfo.getString("value"));
-							outputList.add(o);
+			// Configuration parameters
+			config.setName(configName);
+
+			ArrayList<Method> methodList = new ArrayList<Method>();
+			if (!json.getJSONArray("methods").isEmpty()) {
+				List<JSONObject> jsobj = (List) json.getJSONArray("methods");
+				for (JSONObject method1 : jsobj) {
+					Method m = new Method();
+					m.setName(method1.getString("name"));
+					ArrayList<Variable> variablelist = new ArrayList<Variable>();
+					ArrayList<Case> caselist = new ArrayList<Case>();
+					if (!method1.getString("variables").equals(" ")) {
+						List<JSONObject> variables = (List) method1
+								.getJSONArray("variables");
+						for (JSONObject variable : variables) {
+							Variable var = new Variable();
+							var.setKey(variable.getString("key"));
+							var.setPath(variable.getString("path"));
+							variablelist.add(var);
 						}
-						c.setOutputs(outputList);
-						caselist.add(c);
 					}
+					if (!method1.getString("cases").equals(" ")) {
+						List<JSONObject> cases = (List) method1
+								.getJSONArray("cases");
+						for (JSONObject cas : cases) {
+							Case c = new Case();
+							c.setTest(cas.getString("test"));
+							JSONObject file = cas.getJSONObject("file");
+							c.setFilepath(file.getString("path"));
+							ArrayList<CaseOutput> outputList = new ArrayList<CaseOutput>();
+							List<JSONObject> caseout = cas
+									.getJSONArray("outputs");
+							for (JSONObject outinfo : caseout) {
+								CaseOutput o = new CaseOutput();
+								o.setPath(outinfo.getString("path"));
+								o.setValue(outinfo.getString("value"));
+								outputList.add(o);
+							}
+							c.setOutputs(outputList);
+							caselist.add(c);
+						}
+					}
+					m.setCases(caselist);
+					m.setVariables(variablelist);
+					methodList.add(m);
 				}
-				m.setCases(caselist);
-				m.setVariables(variablelist);
-				methodList.add(m);
 			}
+			config.setMethodlist(methodList);
+			WParser wp = new WParser();
+			wp.writeXML(config, out);
+			String xsdPath = System.getProperty("jboss.server.temp.dir")
+					+ File.separator + "soap" + File.separator
+					+ "configxsd.xsd";
+			String xmlPath = path;
+			if (wp.validateXMLSchema(xsdPath, xmlPath)) {
+				System.out.println("Config validation complete");
+			} else {
+				System.out.println("Error");
+			}
+			out.flush();
+			out.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		config.setMethodlist(methodList);
-		WParser wp = new WParser();
-		wp.writeXML(config, out);
 	}
 
 	protected void doGet(HttpServletRequest request,

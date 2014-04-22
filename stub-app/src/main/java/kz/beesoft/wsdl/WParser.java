@@ -83,14 +83,13 @@ public class WParser {
 	
 	public void writeXML(Config config,PrintWriter out) {
 		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		out.println("<config name=\'" + config.getName() + "\'>");
+		out.println("<config name=\"" + config.getName() + "\">");
 		out.println("	<methods>");
 		for (Method m : config.getMethodlist()) {
-			out.println("		<method name=\'" + m.getName() + "\'>");
+			out.println("		<method name=\"" + m.getName() + "\">");
 			out.println("			<variables> ");
 			for(Variable v :m.getVariables()){
 				out.println("				<variable key='"+v.getKey()+"' path=\""+v.getPath()+"\"/>");
-				out.println("");
 			}
 			out.println("			</variables>");
 			out.println("			<cases>");
