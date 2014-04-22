@@ -25,8 +25,9 @@
 							<td><label>{{service.text}}</label></td>
 							<td>
 								<form method="GET" action="edit.html" class="listform">
-									<button class="btn btn-danger"
-										ng-click="deleteService(service.text)">Delete</button>
+									
+									<input type="button" class="btn btn-danger"
+										ng-click="deleteService(service.text)" value="Delete"/>
 									<input type="hidden" name="service" value="{{service.text}}" />
 									<input type="submit" class="btn btn-primary" value="Edit" />
 								</form>
