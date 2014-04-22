@@ -173,6 +173,12 @@ public class SoapProcessor implements IProcessor {
 				}
 			}
 		}
+		if(s.contains("and")){
+			s = s.replace("and", "&&");
+		}
+		if(s.contains("or")){
+			s = s.replace("or", "||");
+		}
 		return Boolean.parseBoolean(engine.eval(s).toString());
 	}
 

@@ -153,11 +153,11 @@ public class SoapControllerServlet extends HttpServlet {
 							+ File.separator + "config.xml";
 					wp.writeXML(configFile, service);
 					wp.writeOp();
-					if (wp.validateXMLSchema(xsdPath, xmlPath)) {
-						System.out.println("Config validation complete");
-					} else {
-						System.out.println("Error");
-					}
+//					if (wp.validateXMLSchema(xsdPath, xmlPath)) {
+//						System.out.println("Config validation complete");
+//					} else {
+//						System.out.println("Error");
+//					}
 					response.sendRedirect(request.getContextPath()
 							+ "/edit.html?service=" + service);
 
@@ -403,11 +403,11 @@ public class SoapControllerServlet extends HttpServlet {
 					+ File.separator + "soap" + File.separator
 					+ "configxsd.xsd";
 			String xmlPath = path;
-			if (wp.validateXMLSchema(xsdPath, xmlPath)) {
-				System.out.println("Config validation complete");
-			} else {
-				System.out.println("Error");
-			}
+//			if (wp.validateXMLSchema(xsdPath, xmlPath)) {
+//				System.out.println("Config validation complete");
+//			} else {
+//				System.out.println("Error");
+//			}
 			out.flush();
 			out.close();
 		} catch (FileNotFoundException e) {
