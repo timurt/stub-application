@@ -313,7 +313,9 @@ public class SoapControllerServlet extends HttpServlet {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-
+						xml = new Scanner(new File(
+								"C:/bee/wsldparser/source/json.txt"))
+								.useDelimiter("\\Z").next();
 						JSON json = JSONSerializer.toJSON(xml);
 						System.out.println(json);
 						JSONtoXML(json, out);
@@ -357,52 +359,52 @@ public class SoapControllerServlet extends HttpServlet {
 		ArrayList<Method> methodList = new ArrayList<Method>();
 		ArrayList<Variable> variablelist = new ArrayList<Variable>();
 		ArrayList<Case> caselist = new ArrayList<Case>();
-
-		if (json.getJSONArray("methods").isExpandElements()) {
+		boolean varbool = false;
+		boolean casebool = false;
+		if (!json.getJSONArray("methods").isEmpty()) {
 			List<JSONObject> jsobj = (List) json.getJSONArray("methods");
 			for (JSONObject method1 : jsobj) {
 				Method m = new Method();
 				m.setName(method1.getString("name"));
-				if (method1.getJSONArray("variables").isExpandElements()) {
-					List<JSONObject> variables = (List) method1
-							.getJSONArray("variables");
+				System.out.println("VAR" + method1.get("variables")
+						+ "VARIABLES");
+				if (!method1.getString("variables").equals(" ")&& !varbool) {
+					varbool=true;
+					List<JSONObject> variables = (List) method1.getJSONArray("variables");
 					for (JSONObject variable : variables) {
 						Variable var = new Variable();
 						var.setKey(variable.getString("key"));
 						var.setPath(variable.getString("path"));
 						variablelist.add(var);
 					}
-				}else{
-					Variable var = new Variable();
-					variablelist.add(var);
 				}
-				if (method1.getJSONArray("cases").isExpandElements()) {
-					List<JSONObject> cases = (List) method1
-							.getJSONArray("cases");
+				if (!method1.getString("cases").equals(" ")) {
+					casebool=true;
+					List<JSONObject> cases = (List) method1.getJSONArray("cases");
 					for (JSONObject cas : cases) {
 						Case c = new Case();
 						c.setTest(cas.getString("test"));
 						JSONObject file = cas.getJSONObject("file");
 						c.setFilepath(file.getString("path"));
 						ArrayList<CaseOutput> outputList = new ArrayList<CaseOutput>();
-						if (cas.getJSONArray("outputs").isExpandElements()) {
-							List<JSONObject> caseout = cas
-									.getJSONArray("outputs");
-							for (JSONObject outinfo : caseout) {
-								CaseOutput o = new CaseOutput();
-								o.setPath(outinfo.getString("path"));
-								o.setValue(outinfo.getString("value"));
-								outputList.add(o);
-							}
+						List<JSONObject> caseout = cas.getJSONArray("outputs");
+						for (JSONObject outinfo : caseout) {
+							CaseOutput o = new CaseOutput();
+							o.setPath(outinfo.getString("path"));
+							o.setValue(outinfo.getString("value"));
 						}
 						c.setOutputs(outputList);
 						caselist.add(c);
 					}
+				} else {
+					System.out.println("NO CASE FOUND!");
 				}
 				m.setCases(caselist);
 				m.setVariables(variablelist);
 				methodList.add(m);
 			}
+			varbool=false;
+			casebool=false;
 		}
 		config.setMethodlist(methodList);
 		WParser wp = new WParser();
