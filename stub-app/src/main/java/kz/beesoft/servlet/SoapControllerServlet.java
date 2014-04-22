@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,6 +18,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import kz.beesoft.wsdl.Case;
+import kz.beesoft.wsdl.Config;
+import kz.beesoft.wsdl.Method;
+import kz.beesoft.wsdl.CaseOutput;
+import kz.beesoft.wsdl.Variable;
 import kz.beesoft.wsdl.WParser;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
@@ -27,11 +33,6 @@ import net.sf.json.xml.XMLSerializer;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
-import com.predic8.wsdl.Message;
-import com.predic8.wsdl.Operation;
-import com.predic8.wsdl.Output;
-import com.predic8.wsdl.Part;
 
 @WebServlet("/soap/*")
 public class SoapControllerServlet extends HttpServlet {
@@ -97,7 +98,7 @@ public class SoapControllerServlet extends HttpServlet {
 							services.add(service);
 						}
 					}
-				}else {
+				} else {
 				}
 				if (services != null) {
 					result = services.toString();
@@ -141,7 +142,8 @@ public class SoapControllerServlet extends HttpServlet {
 							+ File.separator + "config.xml");
 					configFile.createNewFile();
 
-					WParser wp = new WParser(path + File.separator + service+File.separator, service);
+					WParser wp = new WParser(path + File.separator + service
+							+ File.separator, service);
 					String xsdPath = System
 							.getProperty("jboss.server.temp.dir")
 							+ File.separator
@@ -311,12 +313,14 @@ public class SoapControllerServlet extends HttpServlet {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						
+
 						JSON json = JSONSerializer.toJSON(xml);
-						String config = JSONtoXML(json);
-						 out.println(config);
-						 out.flush();
-						 out.close();
+						System.out.println(json);
+						JSONtoXML(json, out);
+						out.println(json);
+						out.flush();
+						out.close();
+
 					} else {
 						BufferedReader in = new BufferedReader(new FileReader(
 								path + File.separator + parts[4]
@@ -340,9 +344,69 @@ public class SoapControllerServlet extends HttpServlet {
 		out.close();
 	}
 
-	//Kadik eto tvoi method
-	private String JSONtoXML(JSON json) {
-		return "";
+	private void JSONtoXML(JSON js, PrintWriter out) {
+
+		Config config = new Config();
+
+		JSONObject json = (JSONObject) JSONSerializer.toJSON(js);
+		String configName = json.getString("name");
+
+		// Configuration parameters
+		config.setName(configName);
+
+		ArrayList<Method> methodList = new ArrayList<Method>();
+		ArrayList<Variable> variablelist = new ArrayList<Variable>();
+		ArrayList<Case> caselist = new ArrayList<Case>();
+
+		if (json.getJSONArray("methods").isExpandElements()) {
+			List<JSONObject> jsobj = (List) json.getJSONArray("methods");
+			for (JSONObject method1 : jsobj) {
+				Method m = new Method();
+				m.setName(method1.getString("name"));
+				if (method1.getJSONArray("variables").isExpandElements()) {
+					List<JSONObject> variables = (List) method1
+							.getJSONArray("variables");
+					for (JSONObject variable : variables) {
+						Variable var = new Variable();
+						var.setKey(variable.getString("key"));
+						var.setPath(variable.getString("path"));
+						variablelist.add(var);
+					}
+				}else{
+					Variable var = new Variable();
+					variablelist.add(var);
+				}
+				if (method1.getJSONArray("cases").isExpandElements()) {
+					List<JSONObject> cases = (List) method1
+							.getJSONArray("cases");
+					for (JSONObject cas : cases) {
+						Case c = new Case();
+						c.setTest(cas.getString("test"));
+						JSONObject file = cas.getJSONObject("file");
+						c.setFilepath(file.getString("path"));
+						ArrayList<CaseOutput> outputList = new ArrayList<CaseOutput>();
+						if (cas.getJSONArray("outputs").isExpandElements()) {
+							List<JSONObject> caseout = cas
+									.getJSONArray("outputs");
+							for (JSONObject outinfo : caseout) {
+								CaseOutput o = new CaseOutput();
+								o.setPath(outinfo.getString("path"));
+								o.setValue(outinfo.getString("value"));
+								outputList.add(o);
+							}
+						}
+						c.setOutputs(outputList);
+						caselist.add(c);
+					}
+				}
+				m.setCases(caselist);
+				m.setVariables(variablelist);
+				methodList.add(m);
+			}
+		}
+		config.setMethodlist(methodList);
+		WParser wp = new WParser();
+		wp.writeXML(config, out);
 	}
 
 	protected void doGet(HttpServletRequest request,
