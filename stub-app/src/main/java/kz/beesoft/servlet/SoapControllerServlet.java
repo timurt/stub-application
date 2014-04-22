@@ -314,8 +314,6 @@ public class SoapControllerServlet extends HttpServlet {
 							e.printStackTrace();
 						}
 						JSON json = JSONSerializer.toJSON(xml);
-
-						
 						JSONtoXML(json, out);
 						out.flush();
 						out.close();
@@ -348,7 +346,6 @@ public class SoapControllerServlet extends HttpServlet {
 		Config config = new Config();
 
 		JSONObject json = (JSONObject) JSONSerializer.toJSON(js);
-		out.println(json);
 		String configName = json.getString("name");
 
 		// Configuration parameters
