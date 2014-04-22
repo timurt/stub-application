@@ -117,7 +117,7 @@ public class WParser {
 					out.println("				</case>");
 				}
 			} else {
-				out.println("			<case></cases>");
+				out.println("			<cases></cases>");
 			}
 			out.println("			</cases>");
 
