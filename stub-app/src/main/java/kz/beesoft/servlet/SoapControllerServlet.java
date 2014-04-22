@@ -313,11 +313,9 @@ public class SoapControllerServlet extends HttpServlet {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						xml = new Scanner(new File(
-								"C:/bee/wsldparser/source/json.txt"))
-								.useDelimiter("\\Z").next();
+						System.out.println(xml);
 						JSON json = JSONSerializer.toJSON(xml);
-						System.out.println(json);
+						
 						JSONtoXML(json, out);
 						out.println(json);
 						out.flush();
