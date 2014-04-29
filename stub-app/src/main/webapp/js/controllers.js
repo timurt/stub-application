@@ -66,7 +66,7 @@ function EditCtrl($scope, $http, $location, $modal) {
 						method : 'POST',
 						data : $scope.service,
 						headers : {
-							"Content-Type" : "application/json"
+							"Content-Type" : "application/json; charset=UTF-8"
 						}
 
 					}).success(function(response) {
@@ -396,7 +396,7 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 		return str;
 	}
 	$scope.viewVariable = function(key) {
-
+	
 	};
 
 	$scope.createVariable = function(key) {
@@ -462,7 +462,7 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 		$scope.output_tree = {};
 		$('#responseFile').val('');
 		$('#casename').val('');
-		$scope.outputs;
+		$scope.outputs = [];
 
 	}
 	$scope.createOutput = function(value) {

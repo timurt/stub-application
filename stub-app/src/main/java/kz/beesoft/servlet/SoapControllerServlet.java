@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -120,12 +121,19 @@ public class SoapControllerServlet extends HttpServlet {
 				upload.setSizeMax(MAX_REQUEST_SIZE);
 
 				try {
+					List<FileItem> files = new ArrayList<FileItem>();
 					List<FileItem> fileItems = upload.parseRequest(request);
 					Iterator<FileItem> i = fileItems.iterator();
 					while (i.hasNext()) {
 						FileItem fi = (FileItem) i.next();
 						if (!fi.isFormField()) {
-							uploadedFile = fi;
+							
+							if (fi.getFieldName().equals("file")) {
+								uploadedFile = fi;
+							} else {
+								files.add(fi);
+							}
+							
 						} else {
 							service = fi.getString();
 						}
@@ -138,6 +146,13 @@ public class SoapControllerServlet extends HttpServlet {
 							+ File.separator + service + ".wsdl");
 					wsdlFile.createNewFile();
 					uploadedFile.write(wsdlFile);
+					
+					for (FileItem fileItem : files) {
+						File file = new File(path + File.separator + service
+								+ File.separator + fileItem.getName());
+						file.createNewFile();
+						fileItem.write(file);
+					}
 
 					File configFile = new File(path + File.separator + service
 							+ File.separator + "config.xml");
@@ -145,22 +160,11 @@ public class SoapControllerServlet extends HttpServlet {
 
 					WParser wp = new WParser(path + File.separator + service
 							+ File.separator, service);
-					// String xsdPath = System
-					// .getProperty("jboss.server.temp.dir")
-					// + File.separator
-					// + "soap"
-					// + File.separator
-					// + "configxsd.xsd";
-					// String xmlPath = path + File.separator + service
-					// + File.separator + "config.xml";
+				
 					wp.writeXML(configFile, service);
 					wp.writeOp();
 
-					// if (wp.validateXMLSchema(xsdPath, xmlPath)) {
-					// System.out.println("Config validation complete");
-					// } else {
-					// System.out.println("Error");
-					// }
+				
 
 					response.sendRedirect(request.getContextPath()
 							+ "/edit.html?service=" + service);
@@ -316,6 +320,7 @@ public class SoapControllerServlet extends HttpServlet {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
+						System.out.println("TIMUR:>> "+xml);
 						JSON json = JSONSerializer.toJSON(xml);
 						JSONtoXML(json, out);
 
@@ -346,8 +351,12 @@ public class SoapControllerServlet extends HttpServlet {
 
 		PrintWriter out;
 		try {
-			out = new PrintWriter(path);
-
+			try {
+				out = new PrintWriter(path,"UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				out = new PrintWriter(path);
+			}
 			Config config = new Config();
 
 			JSONObject json = (JSONObject) JSONSerializer.toJSON(js);
