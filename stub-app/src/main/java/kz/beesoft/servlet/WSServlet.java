@@ -2,9 +2,11 @@ package kz.beesoft.servlet;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import javax.inject.Inject;
@@ -31,7 +33,6 @@ public class WSServlet extends HttpServlet {
 	
 	private String process(HttpServletRequest request,
 			HttpServletResponse response) {
-		System.out.println("zawel");
 		File folder = new File(absPath);
 		folder.mkdirs();
 		String xml = "";
@@ -46,8 +47,7 @@ public class WSServlet extends HttpServlet {
 			File configFile = new File(path);
 			if (configFile.exists()) {
 				try {
-					BufferedReader in = new BufferedReader(new FileReader(
-							configFile));
+					BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(configFile),"UTF-8"));
 					while (in.ready()) {
 						String s = in.readLine();
 						for (int i = 0; i < s.length(); i++) {
@@ -117,7 +117,9 @@ public class WSServlet extends HttpServlet {
 		} else {
 			return "No XML recieved";
 		}
-		return processor.process(config, xml);
+		String res = processor.process(config, xml);
+		System.out.println("TIMUR::>> "+res);
+		return res;
 
 	}
 
@@ -150,11 +152,12 @@ public class WSServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		response.setContentType("text/xml; charset=UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		request.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
-		
 		out.println(process(request, response));
+		out.flush();
 		out.close();
-
 	}
 
 	protected void doPost(HttpServletRequest request,
