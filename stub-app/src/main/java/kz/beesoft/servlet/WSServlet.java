@@ -31,6 +31,7 @@ public class WSServlet extends HttpServlet {
 	
 	private String process(HttpServletRequest request,
 			HttpServletResponse response) {
+		System.out.println("zawel");
 		File folder = new File(absPath);
 		folder.mkdirs();
 		String xml = "";
@@ -116,7 +117,6 @@ public class WSServlet extends HttpServlet {
 		} else {
 			return "No XML recieved";
 		}
-
 		return processor.process(config, xml);
 
 	}
@@ -151,7 +151,7 @@ public class WSServlet extends HttpServlet {
 			HttpServletResponse response) throws IOException {
 		response.setContentType("text/xml; charset=UTF-8");
 		PrintWriter out = response.getWriter();
-
+		
 		out.println(process(request, response));
 		out.close();
 
