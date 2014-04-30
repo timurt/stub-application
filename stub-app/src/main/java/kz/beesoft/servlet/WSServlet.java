@@ -33,6 +33,7 @@ public class WSServlet extends HttpServlet {
 	
 	private String process(HttpServletRequest request,
 			HttpServletResponse response) {
+		System.out.println("WSServlet.java >> "+request.getRequestURI().toString());
 		File folder = new File(absPath);
 		folder.mkdirs();
 		String xml = "";
@@ -117,8 +118,9 @@ public class WSServlet extends HttpServlet {
 		} else {
 			return "No XML recieved";
 		}
+		System.out.println("WSServlet.java >> "+xml);
 		String res = processor.process(config, xml);
-		System.out.println("TIMUR::>> "+res);
+		
 		return res;
 
 	}

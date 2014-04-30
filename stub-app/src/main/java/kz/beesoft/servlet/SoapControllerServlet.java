@@ -104,6 +104,7 @@ public class SoapControllerServlet extends HttpServlet {
 				}
 				if (services != null) {
 					result = services.toString();
+					
 				}
 
 				// Creates new service with specified name and wsdl file
@@ -130,7 +131,8 @@ public class SoapControllerServlet extends HttpServlet {
 							
 							if (fi.getFieldName().equals("file")) {
 								uploadedFile = fi;
-							} else {
+							} else 
+							if (!fi.getFieldName().equals("add")){
 								files.add(fi);
 							}
 							
@@ -320,7 +322,6 @@ public class SoapControllerServlet extends HttpServlet {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						System.out.println("TIMUR:>> "+xml);
 						JSON json = JSONSerializer.toJSON(xml);
 						JSONtoXML(json, out);
 
@@ -337,6 +338,7 @@ public class SoapControllerServlet extends HttpServlet {
 
 						JSON json = xmlSerializer.read(xml);
 						result = json.toString().replace("@", "");
+						result = new String(result.getBytes(),"UTF-8");
 					}
 				}
 			}

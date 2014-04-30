@@ -33,11 +33,26 @@ function ListCtrl($scope, $http) {
 function EditCtrl($scope, $http, $location, $modal) {
 
 	$scope.name = $location.search()['service'];
-	$http.get('http://localhost:8080/stub-app/soap/service/' + $scope.name, {
-		cache : false
-	}).success(function(data) {
-		$scope.service = data;
-	});
+
+	$http(
+					{
+						url :'http://localhost:8080/stub-app/soap/service/' + $scope.name,
+
+						method : 'GET',
+						data : $scope.service,
+						headers : {
+							"Content-Type" : "application/json; charset=UTF-8",
+							'Content-Transfer-Encoding': 'utf-8' 
+						}
+
+					}).success(function(data) {
+$scope.service = data;
+console.log(data);
+			}).error(function(error) {
+
+			});
+
+	
 
 	$scope.open = function($method) {
 
@@ -305,7 +320,7 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 											method : 'POST',
 											data : $scope.requestTemplate,
 											headers : {
-												"Content-Type" : "application/xml"
+												"Content-Type" : "application/xml; charset=UTF-8"
 											}
 
 										}).success(function(response) {
@@ -335,7 +350,7 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 											method : 'POST',
 											data : $scope.responseTemplate,
 											headers : {
-												"Content-Type" : "application/xml"
+												"Content-Type" : "application/xml; charset=UTF-8"
 											}
 
 										}).success(function(response) {
@@ -365,7 +380,7 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 											method : 'POST',
 											data : $scope.response.file,
 											headers : {
-												"Content-Type" : "application/xml"
+												"Content-Type" : "application/xml; charset=UTF-8"
 											}
 
 										}).success(function(response) {
@@ -396,7 +411,13 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 		return str;
 	}
 	$scope.viewVariable = function(key) {
-	
+		for (var i = 0; i < $scope.method.variables.length; i++) {
+			if ($scope.method.variables[i].key == key) {
+
+				alert("KEY "+$scope.method.variables[i].key+"\nPATH "+$scope.method.variables[i].path);
+				break;
+			}
+		}
 	};
 
 	$scope.createVariable = function(key) {
@@ -426,7 +447,21 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 		$scope.outputs = [];
 	}
 	$scope.viewCase = function(test) {
-
+		for (var i = 0; i < $scope.method.cases.length; i++) {
+			if ($scope.method.cases[i].test == test) {
+				var s = "TEST "+$scope.method.cases[i].test+"\n";
+				if ($scope.method.cases[i].file!=null) {
+					s+="FILE "+$scope.method.cases[i].file.path;
+				}
+				s+="\n\nOUTPUTS\n";
+				for (var j=0; j<$scope.method.cases[i].outputs.length;j++) {
+					s+="PATH "+$scope.method.cases[i].outputs[j].path+"\nVALUE "+$scope.method.cases[i].outputs[j].value+"\n\n";
+				}
+				
+				alert(s);
+				break;
+			}
+		}
 	};
 
 	$scope.deleteCase = function(test) {
@@ -476,7 +511,13 @@ function ModalInstanceCtrl($scope, $modalInstance, $http, method, fileReader,
 	}
 
 	$scope.viewOutput = function(value) {
+		for (var i = 0; i < $scope.outputs.length; i++) {
+			if ($scope.outputs[i].value == value) {
 
+				alert("PATH "+$scope.outputs[i].path+"\nVALUE "+$scope.outputs[i].value);
+				break;
+			}
+		}
 	}
 
 	$scope.deleteOutput = function(value) {
