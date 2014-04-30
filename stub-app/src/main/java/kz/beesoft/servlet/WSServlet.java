@@ -49,19 +49,34 @@ public class WSServlet extends HttpServlet {
 			if (configFile.exists()) {
 				try {
 					BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(configFile),"UTF-8"));
+					boolean t1 = true;
+					boolean t2 = true;
 					while (in.ready()) {
 						String s = in.readLine();
-						for (int i = 0; i < s.length(); i++) {
-							if (s.charAt(i) == ' ') {
-								continue;
-							} else {
-								s = s.substring(i, s.length());
-								break;
-							}
-						}
-						config += s.replaceAll("\n", "").replaceAll("\r", "")
+						s = s.replaceAll("\n", "").replaceAll("\r", "")
 								.replaceAll("\t", "");
-						config = removeSpaces(config);
+						String res = "";
+						for (int i = 0; i < s.length(); i++) {
+							if (s.charAt(i) != ' ')
+								t1 = true;
+							if (t1) {
+								res += s.charAt(i);
+							}
+							if (s.charAt(i) == '>')
+								t1 = false;
+						}
+						s = res;
+						res = "";
+						for (int i = (s.length() - 1); i >= 0; i--) {
+							if (s.charAt(i) != ' ')
+								t2 = true;
+							if (t2) {
+								res = s.charAt(i) + res;
+							}
+							if (s.charAt(i) == '<')
+								t2 = false;
+						}
+						config += res;
 					}
 					in.close();
 				} catch (FileNotFoundException e) {
@@ -123,32 +138,6 @@ public class WSServlet extends HttpServlet {
 		
 		return res;
 
-	}
-
-	private String removeSpaces(String s) {
-		String result = "";
-		boolean t = true;
-		for (int i = 0; i < s.length(); i++) {
-			if (s.charAt(i) != ' ')
-				t = true;
-			if (t) {
-				result += s.charAt(i);
-			}
-			if (s.charAt(i) == '>')
-				t = false;
-		}
-		s = result;
-		result = "";
-		for (int i = (s.length() - 1); i >= 0; i--) {
-			if (s.charAt(i) != ' ')
-				t = true;
-			if (t) {
-				result = s.charAt(i) + result;
-			}
-			if (s.charAt(i) == '<')
-				t = false;
-		}
-		return result;
 	}
 
 	protected void doGet(HttpServletRequest request,
