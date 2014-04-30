@@ -49,9 +49,10 @@ public class WSServlet extends HttpServlet {
 			if (configFile.exists()) {
 				try {
 					BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(configFile),"UTF-8"));
-					boolean t1 = true;
-					boolean t2 = true;
+
 					while (in.ready()) {
+						boolean t1 = true;
+						boolean t2 = true;
 						String s = in.readLine();
 						s = s.replaceAll("\n", "").replaceAll("\r", "")
 								.replaceAll("\t", "");
